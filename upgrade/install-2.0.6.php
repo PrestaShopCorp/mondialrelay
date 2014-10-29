@@ -25,12 +25,24 @@
 *  International Registered Trademark & Property of PrestaShop SA
 */
 
-header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+if (!defined('_PS_VERSION_'))
+	exit;
+
+/** 
+* object module available
+*/
+function upgrade_module_2_0_6($object)
+{
+	$upgrade_version = '2.0.6';
+
+	$object->upgrade_detail[$upgrade_version] = array();
+
+	try {
+		if (!Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'mr_selected` ADD  `MR_insurance` INT( 11 ) NOT NULL AFTER  `MR_poids`'))
+			$object->upgrade_detail[$upgrade_version][] = $object->l('Can\'t add new field in methodtable');
+	}
+	catch (Exception $e) { }
 	
-header("Cache-Control: no-store, no-cache, must-revalidate");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-	
-header("Location: ../");
-exit;
+		Configuration::updateValue('MONDIAL_RELAY', $upgrade_version);
+		return (bool)count($object->upgrade_detail[$upgrade_version]);
+}

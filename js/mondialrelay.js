@@ -168,7 +168,7 @@ var PS_MRObject = (function($, undefined) {
 						$('#PS_MRLineOrderInformation-' + id_order).remove();
 						$('#successCreatingTicket_' + id_order).fadeIn('slow');
 						detailedExpeditionList.push({'id_order':id_order, 'expeditionNumber':json.success[id_order].expeditionNumber});
-
+						
 						if (!$('#detailHistory_' + id_order).length)
 						{
 							$('#PS_MRHistoriqueTableList').append('\
@@ -188,8 +188,13 @@ var PS_MRObject = (function($, undefined) {
 							$('#detailHistory_' + id_order).children('#URL10x15_' + id_order).html('<img src="' + _PS_MR_MODULE_DIR_ + 'img/getTickets.gif" />');
 							$('#detailHistory_' + id_order).children('#expeditionNumber_' + id_order).html('<img src="' + _PS_MR_MODULE_DIR_ + 'img/getTickets.gif" />');
 						}
+						$('#successCreatingTicket_' + id_order).fadeOut('slow');
 					}
+					
+					$('.PS_MRSubmitButton').css('display', 'block');
 			}
+			if(detailedExpeditionList.length)
+				return detailedExpeditionList;
 		});
 		return detailedExpeditionList;
 	}
@@ -251,7 +256,7 @@ var PS_MRObject = (function($, undefined) {
 
 					checkErrorGeneratedTickets(json);
 					detailedExpeditionList = checkSucceedGenerateTickets(json);
-
+					
 					if (detailedExpeditionList.length)
 						getTickets(detailedExpeditionList);
 					else
@@ -263,8 +268,10 @@ var PS_MRObject = (function($, undefined) {
 					displayBackGenerateSubmitButton();
 				}
 			});
+
 		delete(order_id_list);
 		delete(weight_list);
+		delete(insurance_list);
 	}
 
 	/**
@@ -352,7 +359,8 @@ var PS_MRObject = (function($, undefined) {
 		{
 			var id_order = $.trim($(this).parent().next().html());
 			var expeditionNumber = $.trim($(this).parent().next().next().html());
-			history_id_list.push({'id_order':id_order, 'expeditionNumber':expeditionNumber});			
+			history_id_list.push({'id_order':id_order, 'expeditionNumber':expeditionNumber});
+			expeditionNumber = strPad(expeditionNumber,8,0);				
 			history_id_list_str += expeditionNumber+';';
 		});
 		
@@ -388,7 +396,11 @@ var PS_MRObject = (function($, undefined) {
 				});
 		}
 	}
-
+	
+	function strPad(input, length, string) {
+    	string = string || '0'; input = input + '';
+    	return input.length >= length ? input : new Array(length - input.length + 1).join(string) + input;
+	}
 	/**
 	 * Display a fancy box displaying details about the
 	 * backup of the database
@@ -553,7 +565,7 @@ var PS_MRObject = (function($, undefined) {
 	function PS_MRCarrierSelectedProcess(carrierSelected, id_carrier, MRLivraisonType)
 	{
 		// Reset for any carrier changement
-		if (MRLivraisonType != 'LD1' &&	MRLivraisonType != 'LDS')
+		if (MRLivraisonType != 'LD1' &&	MRLivraisonType != 'LDS' && MRLivraisonType != 'HOM')
 		{
 			// Seek Relay point if it doesn't a home delivery mode
 			PS_MRGetRelayPoint(carrierSelected);
@@ -572,7 +584,7 @@ var PS_MRObject = (function($, undefined) {
 	 * Hide the last displayed relay point list
 	 */
 	function PS_MRHideLastRelayPointList()
-	{ 
+	{
 		$('.PS_MRSelectedCarrier').fadeOut('fast');
 	}
 
@@ -637,7 +649,7 @@ var PS_MRObject = (function($, undefined) {
 	 * @param carrier_id
 	 */
 	function PS_MRDisplayRelayPoint(json, blockContent, carrier_id)
-	{
+	{	
 		if (typeof json != 'undefined' && typeof blockContent != 'undefined')
 		{
 			numberDisplayed = 0;
@@ -662,7 +674,7 @@ var PS_MRObject = (function($, undefined) {
 							'PS_MRFloatRelayPointSelected' : 'PS_MRFloatRelayPointSelecteIt';
 
 						$('<div class="PS_MRRelayPointInfo clearfix" id="' + contentBlockid + '">'
-							+ '<img src="' + _PS_MR_MODULE_DIR_ + 'img/logo_hd.png" />'
+							+ '<img src="' + _PS_MR_MODULE_DIR_ + 'logo.png" />'
 							+ '<p><b>' + json.success[relayPoint].LgAdr1 + '</b><br /> ' +  json.success[relayPoint].LgAdr3
 							+ ' - ' + json.success[relayPoint].CP + ' - ' + json.success[relayPoint].Ville
 							+ ' ' + json.success[relayPoint].Pays + '</p>'
@@ -682,7 +694,7 @@ var PS_MRObject = (function($, undefined) {
 						 PS_MROpenPopupDetail(json.success[relayPoint].permaLinkDetail);
 						 });*/
 					}
-				}
+				} 
 				PS_MRHandleSelectedRelayPoint();
 				$(this).fadeIn('fast');
 			});
@@ -908,6 +920,7 @@ var PS_MRObject = (function($, undefined) {
 					$('#' + contentBlockid).after($(this));
 					$('#PS_MRGmap_' + id_carrier).slideDown('fast', function()
 					{
+						PS_MRGmapResizeEvent($map);
 						PS_MRGmapPlaceViewOnMarker($map, markerList[id_carrier][relayPointNumber], relayPointNumber);
 					});
 				}
@@ -927,7 +940,7 @@ var PS_MRObject = (function($, undefined) {
 
 		var html = ' \
 		<div class="PS_MRGmapBulbe"> \
-			<img src="' + _PS_MR_MODULE_DIR_ + 'logo_hd.png" width="10%" style="float:left;" /> \
+			<img src="' + _PS_MR_MODULE_DIR_ + 'logo.png" width="10%" style="float:left;" /> \
 			<p><b>' + relayInfo.LgAdr1 + '</b><br /> ' +  relayInfo.LgAdr3
 			+ ' - ' + relayInfo.CP + ' - ' + relayInfo.Ville
 			+ ' ' + relayInfo.Pays + '</p> \
@@ -1076,96 +1089,114 @@ var PS_MRObject = (function($, undefined) {
 	}
 	
 	function checkToDisplayRelayList()
-	{
+	{		
 		if (typeof PS_MRData != 'undefined')
 		{
-			PS_MRSelectedRelayPoint['relayPointNum'] = PS_MRData.pre_selected_relay;
-		  
-			// Handle input click of the other input to hide the previous relay point list displayed
-			$('input[name=id_carrier], .delivery_option_radio').click(function(e){
-				if ( e.isPropagationStopped() ) {
-					return false;
-				}
-				// Hide MR input if one of them is not selected 
-				var value = $(this).val().replace(",", "");  
-				MR_carrier = isMRCarrier(value);
-				if(MR_carrier != false) {
-					PS_MRCarrierMethodList[MR_carrier.id_carrier] = MR_carrier.id_mr_method;
-					PS_MRSelectedRelayPoint['carrier_id'] = value;  
-					PS_MRCarrierSelectedProcess($(this), MR_carrier.id_carrier, MR_carrier.mr_dlv_mode);
-				}
-				else {				
-					PS_MRHideLastRelayPointList();	
-					PS_MRSelectedRelayPoint['relayPointNum'] = 0;
-				}
-				e.stopPropagation(); 
-			});
+			PS_MRSelectedRelayPoint['relayPointNum'] = PS_MRData.pre_selected_relay;	
+			
 			if (PS_MRData.PS_VERSION < '1.5') {
 				$('input[name="id_carrier"]').each(function(i, e){
 					var parent_element = $(e).closest('tr');
 					var new_element = 'MR_PR_list_'+$(e).val().replace(',', '');
+					var MR_idcarrier = $(e).val().replace(',', '');
+					MR_carrier = isMRCarrier(MR_idcarrier);
+					
 					if($('#'+new_element).length > 0) {
-						;// if the element already exist
+						$('#'+new_element).remove();
+						if( isMRCarrier(MR_idcarrier)!=false && typeof(MR_carrier) != "undefined" && (MR_carrier.dlv_mode!='LD1' && MR_carrier.dlv_mode!='LDS' && MR_carrier.dlv_mode!='HOM')) {
+							$(parent_element).after(
+								'<tr><td colspan="10" style="border:0;"><div><table width="98%" id="'+new_element+'" class="trMRSelected" style="display:none;"><tr>'
+								+	'<td style="border:0;"></td>'
+								+'</tr></table></div>'
+								+'</td></tr>'
+								);
+						}
 					}
 					else {
-						var MR_idcarrier = $(e).val().replace(',', '');
 						if( isMRCarrier(MR_idcarrier)!=false ) {
-							$(parent_element).after(
-							'<tr><td colspan="10" style="border:0;"><div><table width="98%" id="'+new_element+'"><tr>'
-							+	'<td style="border:0;"></td>'
-							+'</tr></table></div>'
-							+'</td></tr>'
-							);
+							if(typeof(MR_carrier) != "undefined" && (MR_carrier.dlv_mode!='LD1' && MR_carrier.dlv_mode!='LDS' && MR_carrier.dlv_mode!='HOM'))
+							{
+								$(parent_element).after(
+								'<tr><td colspan="10" style="border:0;"><div><table width="98%" id="'+new_element+'" class="trMRSelected" style="display:none;"><tr>'
+								+	'<td style="border:0;"></td>'
+								+'</tr></table></div>'
+								+'</td></tr>'
+								);
+							}
 						}
 					}
 					
-					if($(e).prop('checked') == true) {
-						$(e).click();
+					
+					if($(e).attr('checked') == 'checked') {
+						if(MR_carrier != false) {
+							PS_MRCarrierMethodList[MR_idcarrier] = MR_carrier.id_mr_method;
+							PS_MRSelectedRelayPoint['carrier_id'] = MR_idcarrier; 
+							var new_element = 'MR_PR_list_'+MR_idcarrier;
+					
+							PS_MRCarrierSelectedProcess($(this), MR_idcarrier, MR_carrier.dlv_mode);
+						
+							if(MR_carrier.dlv_mode!='LD1' && MR_carrier.dlv_mode!='LDS' && MR_carrier.dlv_mode!='HOM')
+								$('.trMRSelected').fadeIn('fast');
+							else
+								$('.trMRSelected').fadeOut('fast');
+						}
+						else {				
+							PS_MRHideLastRelayPointList();	
+							PS_MRSelectedRelayPoint['relayPointNum'] = -1;
+							$('.trMRSelected').fadeOut('fast');
+						}
 					}
 				});
 			}
 			else {
 				$('input.delivery_option_radio').each(function(i, e){
 					var MR_idcarrier = $(e).val().replace(',', '');
+					MR_carrier = isMRCarrier(MR_idcarrier);
+					var carrier_selected = $('input.delivery_option_radio:checked').val();
 					var parent_element = $(e).parents('.delivery_option');
 					var new_element = 'MR_PR_list_'+MR_idcarrier;
 					if($('#'+new_element).length > 0) {
-						;// if the element already exist
+						$('#'+new_element).remove();
+						if( isMRCarrier(MR_idcarrier)!=false && typeof(MR_carrier) != "undefined" && (MR_carrier.dlv_mode!='LD1' && MR_carrier.dlv_mode!='LDS' && MR_carrier.dlv_mode!='HOM')) {
+							$(parent_element).append(
+							'<div><table width="98%" id="'+new_element+'" class="trMRSelected" style="display:none;"><tr>'
+							+	'<td></td>'
+							+'</tr></table></div>');
+						}
 					}
 					else {
-						if( isMRCarrier(MR_idcarrier)!=false ) {
+						if( isMRCarrier(MR_idcarrier)!=false && typeof(MR_carrier) != "undefined" && (MR_carrier.dlv_mode!='LD1' && MR_carrier.dlv_mode!='LDS' && MR_carrier.dlv_mode!='HOM')) {
 							$(parent_element).append(
-							'<div><table width="98%" id="'+new_element+'"><tr>'
+							'<div><table width="98%" id="'+new_element+'" class="trMRSelected" style="display:none;"><tr>'
 							+	'<td></td>'
 							+'</tr></table></div>');
 						}
 					}
 					
-					if($(e).prop('checked') == true) {
-						$(e).click();
+					// Hide MR input if one of them is not selected 
+					if($(e).val() == carrier_selected)
+					{
+						console.log(carrier_selected);
+						if(MR_carrier != false) {
+							PS_MRCarrierMethodList[MR_idcarrier] = MR_carrier.id_mr_method;
+							PS_MRSelectedRelayPoint['carrier_id'] = MR_idcarrier; 
+							var new_element = 'MR_PR_list_'+MR_idcarrier;
+					
+							PS_MRCarrierSelectedProcess($(this), MR_idcarrier, MR_carrier.dlv_mode);
+						
+							if(MR_carrier.dlv_mode!='LD1' && MR_carrier.dlv_mode!='LDS' && MR_carrier.dlv_mode!='HOM')
+								$('.trMRSelected').fadeIn('fast');
+							else
+								$('.trMRSelected').fadeOut('fast');
+						}
+						else {				
+							PS_MRHideLastRelayPointList();	
+							PS_MRSelectedRelayPoint['relayPointNum'] = -1;
+							$('.trMRSelected').fadeOut('fast');
+						}
 					}
 				});
 			}
-			
-			
-			// 1.5 OPC Validation - Warn user to select a relay point
-			$('.payment_module a').live('click', function() {
-				if (PS_MRData.PS_VERSION >= '1.5' && PS_MRData.carrier)
-				{
-					var _return = !(!PS_MRSelectedRelayPoint['carrier_id'] || !PS_MRSelectedRelayPoint['relayPointNum']);
-					if (!_return)
-						alert(PS_MRTranslationList['errorSelection']);
-					return _return;
-				}
-			});
-			
-			// If MR carrier selected, check MR relay point is selected too
-			$('input[name=processCarrier], button[name=processCarrier]').click(function(){  
-				var _return = !(PS_MRSelectedRelayPoint['carrier_id'] && !PS_MRSelectedRelayPoint['relayPointNum']);
-				if (!_return)
-					alert(PS_MRTranslationList['errorSelection']);
-				return _return;
-			});
 		}
 	}
 	
@@ -1249,6 +1280,38 @@ var PS_MRObject = (function($, undefined) {
 			width = ((width - ul_width) / 2);
 			$('#MR_config_menu').children('ul').css('margin-left', width + 'px');
 		}
+		
+		// 1.5 OPC Validation - Warn user to select a relay point
+			$('.payment_module a').live('click', function() {
+			
+				if (PS_MRData.PS_VERSION >= '1.5' && PS_MRData.carrier)
+				{
+					var _return = !(!PS_MRSelectedRelayPoint['carrier_id'] || !PS_MRSelectedRelayPoint['relayPointNum']);
+					if (!_return)
+						alert(PS_MRTranslationList['errorSelection']);
+					return _return;
+				}
+			});
+			
+			// If MR carrier selected, check MR relay point is selected too
+			$('input[name=processCarrier], button[name=processCarrier]').click(function(){  
+				var _return = !(PS_MRSelectedRelayPoint['carrier_id'] && !PS_MRSelectedRelayPoint['relayPointNum']);
+				if (!_return)
+					alert(PS_MRTranslationList['errorSelection']);
+				
+				return _return;
+			});
+			
+			if (typeof PS_MRData != 'undefined')
+			{
+				if (PS_MRData.PS_VERSION < '1.5') {
+					$('input[name="id_carrier"]').click(function(){
+						checkToDisplayRelayList();
+					});
+				}
+			}
+			
+			// Handle input click of the other input to hide the previous relay point list displayed
 	});
 
 	// To have public method access for this closure

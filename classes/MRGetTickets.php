@@ -192,11 +192,12 @@ class MRGetTickets implements IMondialRelayWSMethod
 			$baseURL = 'http://www.mondialrelay.fr';
 			$URLPDF_A4 = $baseURL.$result->URL_PDF_A4;
 			$URLPDF_A5 = $baseURL.$result->URL_PDF_A5;
-			
+
 			$success['id_order'] = $id_order;
 			$success['expeditionNumber'] = $params['Expeditions'];
 			$success['URLPDF_A4'] = $URLPDF_A4;
 			$success['URLPDF_A5'] = $URLPDF_A5;
+			$success['URLPDF_10x15'] = $baseURL.str_replace('format=A4', 'format=10x15', $result->URL_PDF_A4);
 			$this->_updateTable($id_order, $params['Expeditions'], $URLPDF_A4, $URLPDF_A5, $success);
 		}
 		$this->_resultList['error'][$id_order] = $errors;

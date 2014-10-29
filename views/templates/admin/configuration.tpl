@@ -92,21 +92,21 @@
 		</legend>
 		<ul>
 			<li style="float:left; width:535px;">
-				{l s='Mondial Relay Customer Service Team is available to assist you with freight enquiries 24/7. For general enquiries or to book please contact us by: ' mod='mondialrelay'}
+				{l s='Mondial Relay Customer Service Team is available to assist you with freight enquiries. For general enquiries or to book please contact us by: ' mod='mondialrelay'}
 				<br />
 				<br />- {l s='Mail:' mod='mondialrelay'} <a href="mailto:servicecommercial@mondialrelay.com" style="color:#CA0046;">servicecommercial@mondialrelay.com</a>
-				<br />- {l s='Tel:' mod='mondialrelay'} {l s='0892 707 617 (0,34€ TTC/min)' mod='mondialrelay'}
+				<br />- {l s='Tel:' mod='mondialrelay'} {l s='09.69.322.332 (appel non surtaxé)' mod='mondialrelay'}
 				<br />
 				<br />
 				<br />
 				<b>{l s='For further information please see the FAQ section of our website:' mod='mondialrelay'}</b>
 				<br /><a href="http://www.mondialrelay.fr/public/mr_faq.aspx" target="_blank" style="color:#CA0046;">http://www.mondialrelay.fr</a>
 			</li>
-			<li style="float:left; width:320px;">
+			<!--li style="float:left; width:320px;">
 				<div style="text-align:center;">
 					<img src="http://www.mondialrelay.fr/img/FR/BLOCCPourtoi_FR.gif"/>
 				</div>
-			</li>
+			</li//-->
 		</ul>
 		<br clear="all" />
 	</fieldset>
@@ -138,7 +138,7 @@
 			<img src="../modules/mondialrelay/img/logo.gif" />{l s='To create a Mondial Relay carrier' mod='mondialrelay'}
 		</legend>
 		- {l s='Enter and save your Mondial Relay account settings' mod='mondialrelay'} <br />
-		- {l s='Create a Carrier using the Shipping button' mod='mondialrelay'} <br />
+		- {l s='Create a Carrier using button' mod='mondialrelay'} <a href="javascript:$('#MR_supplier_form').click()" class="green">{l s='Add shipping method with carrier button' mod='mondialrelay'}</a><br />
 		- {l s='Define a price for your carrier on' mod='mondialrelay'}
 		<a href="index.php?tab=AdminCarriers&token={$MR_token_admin_carriers|escape:'htmlall':'UTF-8'}" class="green">{l s='The Carrier page' mod='mondialrelay'}</a> <br />
 		- {l s='To generate labels, you must have a valid and registered address of your store on your' mod='mondialrelay'}
@@ -193,11 +193,13 @@
 					<label for="MR_weight_coefficient" class="mrLabel">{l s='Weight Coefficient:' mod='mondialrelay'}</label>
 					<input class="mrInput" type="text" name="MR_weight_coefficient" id="MR_weight_coefficient" style="width:45px; " value="{$MR_weight_coefficient|escape:'htmlall':'UTF-8'}"/>
 					<sup>*</sup>
-					<span class="indication">{l s='grammes = 1 ' mod='mondialrelay'}{$MR_unit_weight_used|floatval}</span>
+					<span class="indication">{l s='grammes = 1 ' mod='mondialrelay'}</span>
 				</li>
 				<li class="PS_MRSubmit">
-					<input type="button" name="check_connexion" value="{l s='Check connexion' mod='mondialrelay'}" class="button" style="margin:0 60px 0 0;" onclick="return mr_checkConnexion();"/> 
 					<input type="submit" name="submit_account_detail" value="{l s='Update Settings' mod='mondialrelay'}" class="button" />
+					{if $MR_webservice_key && $MR_code_marque && $MR_enseigne_webservice}
+						<input type="button" name="check_connexion" value="{l s='Check connexion' mod='mondialrelay'}" class="button" style="margin:0 60px 0 0;" onclick="return mr_checkConnexion();"/> 
+					{/if}
 				</li>
 			</ul>
 			<div class="small"><sup>*</sup>{l s='Required fields' mod='mondialrelay'}</div>
@@ -219,11 +221,11 @@
 			</legend>
 			
 			<ul>
-				<!--li>
+				<li>
 					<label for="MR_name" class="shipLabel">{l s='Mode:' mod='mondialrelay'}</label>
 					<input type="radio" name="mode" value="widget" {if $MR_MONDIAL_RELAY_MODE == 'widget'}checked="checked"{/if} /> {l s='Widget' mod='mondialrelay'}
 					<input type="radio" name="mode" value="normal" {if $MR_MONDIAL_RELAY_MODE == 'normal'}checked="checked"{/if} /> {l s='Normal' mod='mondialrelay'}
-				</li-->
+				</li>
 			
 				<li>
 					{l s='URL Cron Task:' mod='mondialrelay'} 
@@ -292,11 +294,16 @@
 							{l s='You can choose several countries by pressing Ctrl while selecting countries' mod='mondialrelay'}
 						</span>
 					</label>
-					<select name="MR_country_list[]" id="MR_country_list" multiple size="5" style="width:200px;">
+					<select name="MR_country_list[]" id="MR_country_list" multiple size="9" style="width:200px;">
 						<option value="FR">{l s='France' mod='mondialrelay'}</option>
 						<option value="BE">{l s='Belgium' mod='mondialrelay'}</option>
 						<option value="LU">{l s='Luxembourg' mod='mondialrelay'}</option>
 						<option value="ES">{l s='Spain' mod='mondialrelay'}</option>
+						<option value="DE">{l s='Germany' mod='mondialrelay'}</option>
+						<option value="AT">{l s='Austria' mod='mondialrelay'}</option>
+						<option value="UK">{l s='United Kingdom' mod='mondialrelay'}</option>
+						<option value="UI">{l s='Italy' mod='mondialrelay'}</option>
+						<option value="PT">{l s='Portugal' mod='mondialrelay'}</option>
 					</select>
 					<sup>*</sup>
 				</li>
@@ -364,10 +371,15 @@
 								</form>
 							</td>
 							<td align="center">
+								{if version_compare($smarty.const._PS_VERSION_,'1.6','<')}
 								<a href="index.php?tab=AdminCarriers&id_carrier={$carrier.id_carrier|intval}&updatecarrier&token={$MR_token_admin_carriers|escape:'htmlall':'UTF-8'}">
 									<img src="../img/admin/edit.gif" alt="{l s='Edit' mod='mondialrelay'}" title="{l s='Edit' mod='mondialrelay'}" />
 								</a>
-								
+								{else}
+								<a href="index.php?tab=AdminCarrierWizard&id_carrier={$carrier.id_carrier|intval}&updatecarrier&token={$MR_token_admin_carriers|escape:'htmlall':'UTF-8'}">
+									<img src="../img/admin/edit.gif" alt="{l s='Edit' mod='mondialrelay'}" title="{l s='Edit' mod='mondialrelay'}" />
+								</a>
+								{/if}
 							</td>
 						</tr>
 					{/foreach}

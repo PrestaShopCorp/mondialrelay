@@ -23,7 +23,8 @@ div.PS_MRFormType fieldset > ul > li > span.indication
 
 div.PS_MRFormType fieldset > ul > li.PS_MRSubmit
 {
-	text-align:center;
+	text-align:left;
+	padding-left:150px;
 }
 
 div.PS_MRSubmitButton

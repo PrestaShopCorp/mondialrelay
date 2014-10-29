@@ -240,19 +240,19 @@ class MondialRelay extends Module
 	public function runUpgrade()
 	{
 		/*  List of upgraded version existing */
-		$files_version = array('1.8.0', '1.8.3', '2.0.4');
+		$files_version = array('1.8.0', '1.8.3', '2.0.6');
 
 		$upgrade_path = dirname(__FILE__).'/upgrade/';
-		//if (version_compare(_PS_VERSION_, '1.5', '<'))
-			foreach ($files_version as $version)
+		
+		foreach ($files_version as $version)
+		{
+			$file = $upgrade_path.'install-'.$version.'.php';
+			if ($this->installed_version < $version && file_exists($file))
 			{
-				$file = $upgrade_path.'install-'.$version.'.php';
-				if ($this->installed_version < $version && file_exists($file))
-				{
-					include_once($file);
-					call_user_func('upgrade_module_'.str_replace('.', '_', $version), $this);
-				}
+				include_once($file);
+				call_user_func('upgrade_module_'.str_replace('.', '_', $version), $this);
 			}
+		}
 	}
 
 	/*

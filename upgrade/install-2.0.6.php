@@ -31,9 +31,9 @@ if (!defined('_PS_VERSION_'))
 /** 
 * object module available
 */
-function upgrade_module_2_0_4($object)
+function upgrade_module_2_0_6($object)
 {
-	$upgrade_version = '2.0.4';
+	$upgrade_version = '2.0.6';
 
 	$object->upgrade_detail[$upgrade_version] = array();
 

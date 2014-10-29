@@ -62,7 +62,7 @@ class AdminMondialRelay extends AdminTab
 		{
 			$order['display_total_price'] = Tools::displayPrice($order['total'], new Currency($order['id_currency']));
 			$order['display_shipping_price'] = Tools::displayPrice($order['shipping'], new Currency($order['id_currency']));
-			if (version_compare(_PS_VERSION_, '1.5', '<'))
+			if (version_compare(_PS_VERSION_, '1.5.5', '<'))
 				$order['display_date'] = Tools::displayDate($order['date'], $this->context->language->id);
 			else
 				$order['display_date'] = Tools::displayDate($order['date']);
@@ -94,6 +94,7 @@ class AdminMondialRelay extends AdminTab
 		
 		foreach ($history as &$item)
 			$item['url_10x15'] = str_replace('format=A4', 'format=10x15', $item['url_a4']);
+		
 		$this->context->smarty->assign(array(
 			'MR_histories' => $history)
 		);

@@ -88,12 +88,12 @@
 				</td>
 				<td>
 					<select name="MR_insurance_{$order.id_order|intval}" id="insurance_{$order.id_order|intval}" style="width:200px">
-						<option value="0" {if $order.mr_insurance == 0}selected="selected"{/if}>0 : {l s='No insurance' mod='mondialrelay'}</option>
-						<option value="1" {if $order.mr_insurance == 1}selected="selected"{/if}>1 : {l s='Complementary Insurance Lv1' mod='mondialrelay'}</option>
-						<option value="2" {if $order.mr_insurance == 2}selected="selected"{/if}>2 : {l s='Complementary Insurance Lv2' mod='mondialrelay'}</option>
-						<option value="3" {if $order.mr_insurance == 3}selected="selected"{/if}>3 : {l s='Complementary Insurance Lv3' mod='mondialrelay'}</option>
-						<option value="4" {if $order.mr_insurance == 4}selected="selected"{/if}>4 : {l s='Complementary Insurance Lv4' mod='mondialrelay'}</option>
-						<option value="5" {if $order.mr_insurance == 5}selected="selected"{/if}>5 : {l s='Complementary Insurance Lv5' mod='mondialrelay'}</option>
+						<option value="0" {if $order.mr_insurance == 0}selected="selected"{/if}>0 : {l s='No insurance N0' mod='mondialrelay'}</option>
+						<option value="1" {if $order.mr_insurance == 1}selected="selected"{/if}>1 : {l s='Complementary Insurance N1' mod='mondialrelay'}</option>
+						<option value="2" {if $order.mr_insurance == 2}selected="selected"{/if}>2 : {l s='Complementary Insurance N2' mod='mondialrelay'}</option>
+						<option value="3" {if $order.mr_insurance == 3}selected="selected"{/if}>3 : {l s='Complementary Insurance N3' mod='mondialrelay'}</option>
+						<option value="4" {if $order.mr_insurance == 4}selected="selected"{/if}>4 : {l s='Complementary Insurance N4' mod='mondialrelay'}</option>
+						<option value="5" {if $order.mr_insurance == 5}selected="selected"{/if}>5 : {l s='Complementary Insurance N5' mod='mondialrelay'}</option>
 					</select>
 				</td>
 				<td>{$order.MR_Selected_Num|escape:'htmlall':'UTF-8'}</td>

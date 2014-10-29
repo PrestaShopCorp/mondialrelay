@@ -128,7 +128,7 @@ try
 	{
 		/* $this is the current mondialrelay object loaded when use in BO. Use for perf*/
 		$obj = new $method($params, $mondialrelay);
-
+		
 		/* Verify that the class implement correctly the interface*/
 		/* Else use a Management class to do some ajax stuff*/
 		if (($obj instanceof IMondialRelayWSMethod))

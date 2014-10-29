@@ -32,9 +32,7 @@
 	$(document).ready(function() {literal}{{/literal}
 		PS_MRObject.initFront();
 	{literal}}{/literal});
-
 </script>
-
-{if $MR_Data.PS_VERSION >= '1.5' && !$MR_Data.carrier}
+{*if $MR_Data.PS_VERSION >= '1.5' && !$MR_Data.carrier}
 	{l s='Mondial relay can\'t fetch any replay point due to prestashop error' mod='mondialrelay'}
-{/if}
+{/if*}

@@ -54,7 +54,7 @@
 							<a href="{$history.url_a5|escape:'htmlall':'UTF-8'}" target="a5"><img width="20" src="{$new_base_dir|escape:'htmlall':'UTF-8'}img/pdf_icon.jpg" /></a>
 						</td>
 						<td id="URL10x15_{$history.order|intval}">
-							<a href="{$history.url_10x15|escape:'htmlall':'UTF-8'}" target="a5"><img width="20" src="{$new_base_dir|escape:'htmlall':'UTF-8'}img/pdf_icon.jpg" /></a>
+							<a href="{$history.url_10x15|escape:'htmlall':'UTF-8'}" target="10x15"><img width="20" src="{$new_base_dir|escape:'htmlall':'UTF-8'}img/pdf_icon.jpg" /></a>
 						</td>
 					</tr>
 				{/foreach}
@@ -64,8 +64,8 @@
 			<div id="MR_error_histories">
 				<h3 style="color:red;">{l s='No histories available' mod='mondialrelay'}</h3>
 			</div>
-			{else}
-			<div class="PS_MRSubmitButton">
+		{/if}
+			<div class="PS_MRSubmitButton" {if !$MR_histories|count}style="display:none;"{/if}>
 				<input type="button" id="PS_MRSubmitButtonPrintSelectedA4" name="printSelectedA4" value="{l s='Print selected stick A4' mod='mondialrelay'}" class="button" />
 				<input type="button" id="PS_MRSubmitButtonPrintSelectedA5" name="printSelectedA5" value="{l s='Print selected stick A5' mod='mondialrelay'}" class="button" />
 				<input type="button" id="PS_MRSubmitButtonPrintSelected10x15" name="printSelected10x15" value="{l s='Print selected stick 10x15' mod='mondialrelay'}" class="button" />
@@ -74,7 +74,6 @@
 					<img src="{$new_base_dir|escape:'htmlall':'UTF-8'}img/getTickets.gif"
 				</div>
 			</div>
-		{/if}
 		</form>
 	</div>
 </fieldset>

@@ -129,13 +129,14 @@
 	
 	$(document).ready(function () {  
 		
-		loadMR_Map("#Zone_Widget", "24R");
+		//loadMR_Map("#Zone_Widget", "24R");
 		
-		setTimeout(function(){ 
+		//setTimeout(function(){ 
 			$("#link_zone_widget").fancybox(
 			{
 				width		:	705, 
 				height		:	620, 
+				autoSize	:	false,
 				autoScale	:	false, 
 				autoDimensions : false,
 				afterShow : function(){
@@ -152,7 +153,7 @@
 				}
 			});
 			checkToDisplayRelayList();		
-		},1500);
+		//},1500);
 		
 		
 	});

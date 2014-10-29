@@ -447,7 +447,7 @@ class MRCreateTickets implements IMondialRelayWSMethod
 			$history->changeIdOrderState((int)$orderState, $order);
 		else 
 			$history->changeIdOrderState((int)$orderState, (int)($params['NDossier']));
-		$history->id_employee = (int)Context::getContext()->employee->id;
+		$history->id_employee = (isset(Context::getContext()->employee->id) ? (int)Context::getContext()->employee->id : '');
 		$history->addWithemail(true, $templateVars);
 		unset($order);
 		unset($history);
@@ -476,9 +476,8 @@ class MRCreateTickets implements IMondialRelayWSMethod
 				'>'.$expedition.'<'.$this->_webServiceKey.'>'));
 			$ticketURL = $baseURL.$result->URL_Etiquette;
 			$trackingURL = $baseURL.
-				'lg_fr/espaces/url/popup_exp_details.aspx?cmrq='.$params['Enseigne'].
-				$this->_markCode.'&nexp='.$expedition.'&crc='.$securityKey;
-
+				'public/permanent/tracking.aspx?ens='.$params['Enseigne'].$this->_markCode.'&exp='.$expedition.'&language='.Configuration::get('PS_LANG_DEFAULT').'&crc='.$securityKey;
+			
 			$success['displayExpedition'] = $this->_mondialrelay->l('Expedition Number : ', $this->class_name).$expedition;
 			$success['displayTicketURL'] = $this->_mondialrelay->l('Ticket URL : ', $this->class_name).$ticketURL;
 			$success['displayTrackingURL'] = $this->_mondialrelay->l('Tracking URL: ', $this->class_name).$trackingURL;
@@ -505,7 +504,7 @@ class MRCreateTickets implements IMondialRelayWSMethod
 				$this->_parseResult($client, $result, $params, $rootCase['id_mr_selected']);
 			}
 			unset($client);
-			Configuration::updateValue('MONDIALRELAY_CONFIGURATION_OK', true);
+			Configuration::updateValue('MONDIAL_RELAY_CONFIGURATION_OK', true);
 		}
 		else
 			throw new Exception($this->_mondialrelay->l('The Mondial Relay webservice is not currently reliable', $this->class_name));

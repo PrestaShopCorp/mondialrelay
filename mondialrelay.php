@@ -4,10 +4,10 @@
 *
 * NOTICE OF LICENSE
 *
-* This source file is subject to the Academic Free License (AFL 3.0)
+* This source file is subject to the Open Software License (OSL 3.0)
 * that is bundled with this package in the file LICENSE.txt.
 * It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
+* http://opensource.org/licenses/osl-3.0.php
 * If you did not receive a copy of the license and are unable to
 * obtain it through the world-wide-web, please send an email
 * to license@prestashop.com so we can send you a copy immediately.
@@ -20,7 +20,7 @@
 *
 * @author    PrestaShop SA <contact@prestashop.com>
 * @copyright 2007-2014 PrestaShop SA
-* @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+* @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 * International Registered Trademark & Property of PrestaShop SA
 */
 
@@ -72,7 +72,7 @@ class MondialRelay extends Module
 	{
 		$this->name		= 'mondialrelay';
 		$this->tab		= 'shipping_logistics';
-		$this->version	= '2.0.4';
+		$this->version	= '2.0.6';
 		$this->installed_version = '';
 		$this->module_key = '366584e511d311cfaa899fc2d9ec1bd0';
 		$this->author = 'PrestaShop';
@@ -240,10 +240,10 @@ class MondialRelay extends Module
 	public function runUpgrade()
 	{
 		/*  List of upgraded version existing */
-		$files_version = array('1.8.0', '1.8.3');
+		$files_version = array('1.8.0', '1.8.3', '2.0.4');
 
 		$upgrade_path = dirname(__FILE__).'/upgrade/';
-		if (version_compare(_PS_VERSION_, '1.5', '<'))
+		//if (version_compare(_PS_VERSION_, '1.5', '<'))
 			foreach ($files_version as $version)
 			{
 				$file = $upgrade_path.'install-'.$version.'.php';
@@ -553,7 +553,7 @@ class MondialRelay extends Module
 	*/
 	public function hookHeader($params)
 	{
-		Configuration::updateValue('MONDIAL_RELAY_MODE', 'widget');
+		//Configuration::updateValue('MONDIAL_RELAY_MODE', 'widget');
 		if (!($file = basename(Tools::getValue('controller'))))
 			$file = str_replace('.php', '', basename($_SERVER['SCRIPT_NAME']));
 
@@ -600,7 +600,7 @@ class MondialRelay extends Module
 
 			/*  Temporary carrier for some test */
 			$carrier = new Carrier((int)($row['id_carrier']));
-			if ((Configuration::get('PS_SHIPPING_METHOD') && $carrier->getMaxDeliveryPriceByWeight($id_zone) === false) || (!Configuration::get('PS_SHIPPING_METHOD') && $carrier->getMaxDeliveryPriceByPrice($id_zone) === false))
+			if ((($carrier->getShippingMethod() == Carrier::SHIPPING_METHOD_WEIGHT) && $carrier->getMaxDeliveryPriceByWeight($id_zone) === false) || (($carrier->getShippingMethod() == Carrier::SHIPPING_METHOD_PRICE) && $carrier->getMaxDeliveryPriceByPrice($id_zone) === false))
 				unset($carriersList[$k]);
 			else if ($row['range_behavior'])
 			{
@@ -609,8 +609,8 @@ class MondialRelay extends Module
 					Address::getZoneById((int)$this->context->cart->id_address_delivery) :
 					(int)$this->context->country->id_zone;
 
-				if ((Configuration::get('PS_SHIPPING_METHOD') && (!Carrier::checkDeliveryPriceByWeight($row['id_carrier'], $this->context->cart->getTotalWeight(), $id_zone))) ||
-					(!Configuration::get('PS_SHIPPING_METHOD') &&
+				if (($carrier->getShippingMethod() == Carrier::SHIPPING_METHOD_WEIGHT && (!Carrier::checkDeliveryPriceByWeight($row['id_carrier'], $this->context->cart->getTotalWeight(), $id_zone))) ||
+					($carrier->getShippingMethod() == Carrier::SHIPPING_METHOD_PRICE &&
 						(!Carrier::checkDeliveryPriceByPrice($row['id_carrier'], $this->context->cart->getOrderTotal(true, MondialRelay::BOTH_WITHOUT_SHIPPING), $id_zone, $this->context->cart->id_currency) ||
 							!Carrier::checkDeliveryPriceByPrice($row['id_carrier'], $this->context->cart->getOrderTotal(true, MondialRelay::BOTH_WITHOUT_SHIPPING), $id_zone, $this->context->cart->id_currency))))
 					unset($carriersList[$k]);
@@ -806,7 +806,7 @@ class MondialRelay extends Module
 		/*  TODO : Fill an array with admi controller name */
 		$this->context->smarty->assign(array(
 				'MR_token_admin_performance' => Tools::getAdminToken('AdminPerformance'.(int)(Tab::getIdFromClassName('AdminPerformance')).(int)($this->context->cookie->id_employee)),
-				'MR_token_admin_carriers' => Tools::getAdminToken('AdminCarriers'.(int)(Tab::getIdFromClassName('AdminCarriers')).(int)$this->context->employee->id),
+				'MR_token_admin_carriers' => (version_compare(_PS_VERSION_, '1.6', '<') ? Tools::getAdminToken('AdminCarriers'.(int)(Tab::getIdFromClassName('AdminCarriers')).(int)$this->context->employee->id) : Tools::getAdminToken('AdminCarrierWizard'.(int)(Tab::getIdFromClassName('AdminCarrierWizard')).(int)$this->context->employee->id)),
 				'MR_token_admin_contact' => array(
 					'controller_name' => $controller, 
 					'token' => Tools::getAdminToken($controller.(int)(Tab::getIdFromClassName($controller)).(int)$this->context->employee->id)),
@@ -919,8 +919,8 @@ class MondialRelay extends Module
 
 		/*  Default Range value depending of the delivery mode */
 		$range_weight = array(
-			'24R' => array(0, 20000 / $weight_coef),
-			'DRI' => array(20000 / $weight_coef, 130000 / $weight_coef),
+			'24R' => array(0, 30000 / $weight_coef),
+			'DRI' => array(30000 / $weight_coef, 130000 / $weight_coef),
 			'LD1' => array(0, 60000 / $weight_coef),
 			'HOM' => array(0, 60000 / $weight_coef),
 			'LDS' => array(30000 / $weight_coef, 130000 / $weight_coef)
@@ -1113,7 +1113,7 @@ class MondialRelay extends Module
 				SELECT moh.`id_order_state` 
 				FROM `'._DB_PREFIX_.'order_history` moh 
 				WHERE moh.`id_order` = o.`id_order` 
-				ORDER BY moh.`id_order_history` DESC LIMIT 1) = '.(int)($id_order_state).'
+				ORDER BY moh.`date_add` DESC LIMIT 1) = '.(int)($id_order_state).'
 			AND o.`id_order` = mrs.`id_order`';
 	}
 

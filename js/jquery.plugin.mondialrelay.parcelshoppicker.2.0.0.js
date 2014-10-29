@@ -313,7 +313,6 @@ var Widgets = Widgets || function () {
 
         // Initialisation du Widget après chargement du contrôle
         MR_Widget_Init: function (container, prms) {
-
             private.params = prms;
             // Autocomplete sur le nom de ville
             var t = container.find('input.iArg0');

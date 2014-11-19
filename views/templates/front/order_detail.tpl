@@ -27,7 +27,7 @@
 <ul class="address item">
 	<li class="address_title">Mondial Relay</li>
 	<li>
-{if $mr_addr}
+{if isset($mr_addr) && $mr_addr}
 	<p id="dateofdelivery"><b style="text-transform:none;">{l s='Delivery to your Point Relais®' mod='mondialrelay'}</b> <br />{$mr_addr|escape:'UTF-8'}</p>
 {/if}	
 {if $mr_url}

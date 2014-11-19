@@ -435,7 +435,27 @@ class MRCreateTickets implements IMondialRelayWSMethod
 		// Update the database for order and orderHistory
 		$order->shipping_number = $expeditionNum;
 		$order->update();
-
+		
+		if (version_compare(_PS_VERSION_, '1.5', '>='))
+		{
+			//Retrieve Order Carrier
+			$sql = 'SELECT `id_order_carrier`
+					FROM `'._DB_PREFIX_.'order_carrier`
+					WHERE `id_order` = '.(int)$order->id;
+		
+			$id_order_carrier = Db::getInstance()->getValue($sql);
+			
+			if($id_order_carrier)
+			{
+				$order_carrier = new OrderCarrier((int)$id_order_carrier);
+				if(Validate::isLoadedObject($order_carrier))
+				{
+					$order_carrier->tracking_number = pSQL($expeditionNum);
+					$order_carrier->update();
+				}
+			}
+		}
+			
 		$templateVars = array('{followup}' => $trackingURL);
 		$orderState = (Configuration::get('PS_OS_SHIPPING')) ?
 			Configuration::get('PS_OS_SHIPPING') :
@@ -450,6 +470,7 @@ class MRCreateTickets implements IMondialRelayWSMethod
 		$history->id_employee = (isset(Context::getContext()->employee->id) ? (int)Context::getContext()->employee->id : '');
 		$history->addWithemail(true, $templateVars);
 		unset($order);
+		unset($order_carrier);
 		unset($history);
 	}
 

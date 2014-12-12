@@ -72,7 +72,7 @@ class MondialRelay extends Module
 	{
 		$this->name		= 'mondialrelay';
 		$this->tab		= 'shipping_logistics';
-		$this->version	= '2.0.6';
+		$this->version	= '2.0.7';
 		$this->installed_version = '';
 		$this->module_key = '366584e511d311cfaa899fc2d9ec1bd0';
 		$this->author = 'PrestaShop';
@@ -434,7 +434,7 @@ class MondialRelay extends Module
 
 		$sql = '
 			SELECT s.`MR_Selected_LgAdr1`, s.`MR_Selected_LgAdr2`, s.`MR_Selected_LgAdr3`, s.`MR_Selected_LgAdr4`,
-			 s.`MR_Selected_CP`, s.`MR_Selected_Ville`, s.`MR_Selected_Pays`, s.`MR_Selected_Num`, s.`url_suivi`, m.dlv_mode 
+			 s.`MR_Selected_CP`, s.`MR_Selected_Ville`, s.`MR_Selected_Pays`, s.`MR_Selected_Num`, s.`url_suivi`, s.`exp_number`, m.dlv_mode 
 			FROM `'._DB_PREFIX_.'mr_selected` s
 			INNER JOIN  '._DB_PREFIX_.'mr_method m ON m.id_mr_method = s.id_method 
 			WHERE s.`id_cart` = '.(int)$params['order']->id_cart; 
@@ -447,13 +447,19 @@ class MondialRelay extends Module
 					($res['MR_Selected_LgAdr4'] ? ' <br/> ' : '').$res['MR_Selected_CP'].' '.
 					$res['MR_Selected_Ville'].' <br/> '.$res['MR_Selected_Pays'];
 			
-		if ((!$res) || ($res['dlv_mode'] == 'LD1') || ($res['dlv_mode'] == 'LDS') || ($res['dlv_mode'] == 'HOM'))
+		if ((!$res))	
 			return '';
-
-		$this->context->smarty->assign(
-			array(
-				'mr_addr' => $point_relais,
-				'mr_url' => $res['url_suivi']));
+		elseif (($res['dlv_mode'] == 'LD1') || ($res['dlv_mode'] == 'LDS') || ($res['dlv_mode'] == 'HOM'))
+			$this->context->smarty->assign(
+				array(
+						'mr_url' => $res['url_suivi']
+						));
+		else
+			$this->context->smarty->assign(
+				array(
+					'mr_addr' => $point_relais,
+					'mr_url' => $res['url_suivi']
+				));
 
 		return $this->fetchTemplate('/views/templates/front/', 'order_detail');
 	}
@@ -556,6 +562,7 @@ class MondialRelay extends Module
 	*/
 	public function hookHeader($params)
 	{
+		$this->context->controller->addJquery();	
 		//Configuration::updateValue('MONDIAL_RELAY_MODE', 'widget');
 		if (!($file = basename(Tools::getValue('controller'))))
 			$file = str_replace('.php', '', basename($_SERVER['SCRIPT_NAME']));

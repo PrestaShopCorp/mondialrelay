@@ -223,6 +223,8 @@
 	{
 		// 1.5 OPC Validation - Warn user to select a relay point
 			$('.payment_module a').live('click', function() {
+                            if (typeof PS_MRData != 'undefined')
+                            {
 				if (PS_MRData.PS_VERSION >= '1.5' && PS_MRData.carrier && PS_MRSelectedRelayPoint['carrier_id']!=0)
 				{
 					var _return = !(!PS_MRSelectedRelayPoint['carrier_id'] || !PS_MRSelectedRelayPoint['relayPointNum']);
@@ -230,6 +232,7 @@
 						alert(PS_MRTranslationList['errorSelection']);
 					return _return;
 				}
+                            }
 			});
 			
 			// If MR carrier selected, check MR relay point is selected too

@@ -564,7 +564,7 @@ class MondialRelay extends Module
 	*/
 	public function hookHeader($params)
 	{
-		if (version_compare(_PS_VERSION_, '1.5', '<'))
+		if (version_compare(_PS_VERSION_, '1.5', '>='))
 			$this->context->controller->addJquery();
 		
 		/*Configuration::updateValue('MONDIAL_RELAY_MODE', 'widget');*/

@@ -72,7 +72,7 @@ class MondialRelay extends Module
 	{
 		$this->name		= 'mondialrelay';
 		$this->tab		= 'shipping_logistics';
-		$this->version	= '2.0.6';
+		$this->version	= '2.0.8';
 		$this->installed_version = '';
 		$this->module_key = '366584e511d311cfaa899fc2d9ec1bd0';
 		$this->author = 'PrestaShop';
@@ -430,16 +430,19 @@ class MondialRelay extends Module
 	public function hookOrderDetailDisplayed($params)
 	{
 		if (!Mondialrelay::isMondialRelayCarrier($params['order']->id_carrier))
-			return '';
+			return;
 
 		$sql = '
 			SELECT s.`MR_Selected_LgAdr1`, s.`MR_Selected_LgAdr2`, s.`MR_Selected_LgAdr3`, s.`MR_Selected_LgAdr4`,
-			 s.`MR_Selected_CP`, s.`MR_Selected_Ville`, s.`MR_Selected_Pays`, s.`MR_Selected_Num`, s.`url_suivi`, m.dlv_mode 
+			 s.`MR_Selected_CP`, s.`MR_Selected_Ville`, s.`MR_Selected_Pays`, s.`MR_Selected_Num`, s.`url_suivi`, s.`exp_number`, m.dlv_mode 
 			FROM `'._DB_PREFIX_.'mr_selected` s
 			INNER JOIN  '._DB_PREFIX_.'mr_method m ON m.id_mr_method = s.id_method 
 			WHERE s.`id_cart` = '.(int)$params['order']->id_cart; 
 		$res = Db::getInstance()->getRow($sql);
 
+		if (!$res)
+			return;
+		
 		$point_relais = $res['MR_Selected_LgAdr1'].
 					($res['MR_Selected_LgAdr1'] ? ' <br/> ' : '').$res['MR_Selected_LgAdr2'].
 					($res['MR_Selected_LgAdr2'] ? ' <br/> ' : '').$res['MR_Selected_LgAdr3'].
@@ -447,13 +450,18 @@ class MondialRelay extends Module
 					($res['MR_Selected_LgAdr4'] ? ' <br/> ' : '').$res['MR_Selected_CP'].' '.
 					$res['MR_Selected_Ville'].' <br/> '.$res['MR_Selected_Pays'];
 			
-		if ((!$res) || ($res['dlv_mode'] == 'LD1') || ($res['dlv_mode'] == 'LDS') || ($res['dlv_mode'] == 'HOM'))
-			return '';
-
-		$this->context->smarty->assign(
-			array(
-				'mr_addr' => $point_relais,
-				'mr_url' => $res['url_suivi']));
+		
+		if (($res['dlv_mode'] == 'LD1') || ($res['dlv_mode'] == 'LDS') || ($res['dlv_mode'] == 'HOM'))
+			$this->context->smarty->assign(
+				array(
+						'mr_url' => $res['url_suivi']
+						));
+		else
+			$this->context->smarty->assign(
+				array(
+					'mr_addr' => $point_relais,
+					'mr_url' => $res['url_suivi']
+				));
 
 		return $this->fetchTemplate('/views/templates/front/', 'order_detail');
 	}
@@ -556,7 +564,10 @@ class MondialRelay extends Module
 	*/
 	public function hookHeader($params)
 	{
-		//Configuration::updateValue('MONDIAL_RELAY_MODE', 'widget');
+		if (version_compare(_PS_VERSION_, '1.5', '>='))
+			$this->context->controller->addJquery();
+		
+		/*Configuration::updateValue('MONDIAL_RELAY_MODE', 'widget');*/
 		if (!($file = basename(Tools::getValue('controller'))))
 			$file = str_replace('.php', '', basename($_SERVER['SCRIPT_NAME']));
 

@@ -24,7 +24,6 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 <!--On charge Google Map API-->  
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>  
  <!--On charge le widget mondial relay depuis leurs serveurs-->  
 <script type="text/javascript" src="{$new_base_dir|escape:'htmlall':'UTF-8'}js/jquery.plugin.mondialrelay.parcelshoppicker.2.0.0.js"></script> 
 

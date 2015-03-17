@@ -42,6 +42,5 @@
 	PS_MRTranslationList['moreDetails'] = "{l s='More details' mod='mondialrelay'}";
 </script>
 
-<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript" src="{$new_base_dir|escape:'htmlall':'UTF-8'}js/mondialrelay.js"></script>
 <script type="text/javascript" src="{$new_base_dir|escape:'htmlall':'UTF-8'}js/gmap.js"></script>

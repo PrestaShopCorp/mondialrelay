@@ -581,6 +581,9 @@ class MondialRelay extends Module
 					'MR_MONDIAL_RELAY_MODE' => Configuration::get('MONDIAL_RELAY_MODE'),
 				)
 			);
+
+			$this->context->controller->addJS('https://maps.google.com/maps/api/js?sensor=false');
+
 			if (Configuration::get('MONDIAL_RELAY_MODE') == 'widget')
 				return $this->fetchTemplate('/views/templates/front/', 'header_widget');
 			else

@@ -97,14 +97,14 @@ class MondialRelay extends Module
 
 	public function install()
 	{
-		if (!parent::install())
-			return false;
-			
 		if (!function_exists('curl_version') || !extension_loaded('soap'))
 		{
 			$this->_errors[] = $this->l('Mondial Relay needs SOAP & cURL to be installed on your server.');
 			return false;
 		}
+		
+		if (!parent::install())
+			return false;		
 
 		if (!$this->registerHookByVersion())
 			return false;

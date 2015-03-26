@@ -72,7 +72,7 @@ class MondialRelay extends Module
 	{
 		$this->name		= 'mondialrelay';
 		$this->tab		= 'shipping_logistics';
-		$this->version	= '2.0.8';
+		$this->version	= '2.1.0';
 		$this->installed_version = '';
 		$this->module_key = '366584e511d311cfaa899fc2d9ec1bd0';
 		$this->author = 'PrestaShop';
@@ -582,7 +582,12 @@ class MondialRelay extends Module
 				)
 			);
 
-			$this->context->controller->addJS('https://maps.google.com/maps/api/js?sensor=false');
+			if($this->canAddJSViaController())
+				$this->context->controller->addJS('https://maps.google.com/maps/api/js?sensor=false');
+			else
+				$this->context->smarty->assign(array(
+					'addJsInTemplate' => true
+				));
 
 			if (Configuration::get('MONDIAL_RELAY_MODE') == 'widget')
 				return $this->fetchTemplate('/views/templates/front/', 'header_widget');
@@ -590,6 +595,17 @@ class MondialRelay extends Module
 				return $this->fetchTemplate('/views/templates/front/', 'header');
 		}
 		return '';
+	}
+
+	private function canAddJSViaController()
+	{
+		if(version_compare(_PS_VERSION_, '1.6', '>='))
+			return true;
+
+		if(Configuration::get('PS_JS_THEME_CACHE'))
+			return false;
+
+		return true;
 	}
 
 	public function hookExtraCarrier($params)

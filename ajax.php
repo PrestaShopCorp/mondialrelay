@@ -34,7 +34,7 @@
 /* 
 * 	Clean displayed content for Admin ajax query
 */
-ob_clean();
+@ob_clean();
 
 /* 
 *  	Front Ajax query, need the front cookie and MR class

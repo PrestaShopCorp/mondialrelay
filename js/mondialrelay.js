@@ -1127,7 +1127,7 @@ var PS_MRObject = (function($, undefined) {
 					}
 					
 					
-					if($(e).attr('checked') == 'checked') {
+					if($(e).attr('checked') == 'checked' || $(e).attr('checked')) {
 						if(MR_carrier != false) {
 							PS_MRCarrierMethodList[MR_idcarrier] = MR_carrier.id_mr_method;
 							PS_MRSelectedRelayPoint['carrier_id'] = MR_idcarrier; 

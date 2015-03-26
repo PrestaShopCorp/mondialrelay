@@ -23,12 +23,15 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 *}
-<!--On charge Google Map API-->  
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>  
- <!--On charge le widget mondial relay depuis leurs serveurs-->  
-<script type="text/javascript" src="{$new_base_dir|escape:'htmlall':'UTF-8'}js/jquery.plugin.mondialrelay.parcelshoppicker.2.0.0.js"></script> 
+{if isset($addJsInTemplate)}
+	<!--On charge Google Map API-->  
+	<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
+{/if}
 
+<!--On charge le widget mondial relay depuis leurs serveurs-->  
+<script type="text/javascript" src="{$new_base_dir|escape:'htmlall':'UTF-8'}js/jquery.plugin.mondialrelay.parcelshoppicker.2.0.0.js"></script> 
 <script type="text/javascript" src="{$new_base_dir|escape:'htmlall':'UTF-8'}js/mondialrelay_widget.js"></script>
+
 
 <script type="text/javascript">
 	// Global JS Value

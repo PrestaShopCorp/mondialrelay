@@ -593,6 +593,14 @@ var PS_MRObject = (function($, undefined) {
 	 */
 	function PS_MRCheckSelectedRelayPoint()
 	{
+		
+		// Fix relay point close, relay point select on other adress
+		if( $('.PS_MRFloatRelayPointSelected').length == 0 )
+		{
+			alert(PS_MRTranslationList['errorSelection']);
+			return false;
+		}	
+		
 		var input;
 
 		// Check if the input is linked to the module and look into

@@ -672,7 +672,7 @@ class MondialRelay extends Module
 				'carrier_list' => $carriersList,
 				'carrier' => $carrier,				
 				'PS_VERSION' => _PS_VERSION_,
-				'pre_selected_relay' => isset($preSelectedRelay['MR_selected_num']) ? $preSelectedRelay['MR_selected_num'] : 0,
+				'pre_selected_relay' => isset($preSelectedRelay['MR_selected_num']) ? $preSelectedRelay['MR_selected_num'] : -1,
 			))
 		));
 		if (Configuration::get('MONDIAL_RELAY_MODE') == 'widget')

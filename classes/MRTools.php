@@ -43,7 +43,7 @@ class MRTools
 	 */
 	public static function seemsUTF8($str)
 	{
-		$length = Tools::strlen($str);
+		$length = strlen($str);
 
 		for ($i = 0; $i < $length; $i++)
 		{

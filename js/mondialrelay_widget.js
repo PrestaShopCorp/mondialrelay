@@ -222,9 +222,9 @@
 	$(document).ready(function()
 	{
 		// 1.5 OPC Validation - Warn user to select a relay point
-			$('.payment_module a').live('click', function() {
-                            if (typeof PS_MRData != 'undefined')
-                            {
+		$('.payment_module a').live('click', function() {
+            if (typeof PS_MRData != 'undefined')
+            {
 				if (PS_MRData.PS_VERSION >= '1.5' && PS_MRData.carrier && PS_MRSelectedRelayPoint['carrier_id']!=0)
 				{
 					var _return = !(!PS_MRSelectedRelayPoint['carrier_id'] || !PS_MRSelectedRelayPoint['relayPointNum']);
@@ -232,23 +232,27 @@
 						alert(PS_MRTranslationList['errorSelection']);
 					return _return;
 				}
-                            }
-			});
-			
-			// If MR carrier selected, check MR relay point is selected too
-			$('input[name=processCarrier], button[name=processCarrier]').click(function(){
+            }
+		});
+		
+		// If MR carrier selected, check MR relay point is selected too
+		$('input[name=processCarrier], button[name=processCarrier]').click(function(){
+			var carrier_selected = $('input[class=delivery_option_radio]:checked').val();
+			if (PS_MRSelectedRelayPoint['carrier_id']+',' == carrier_selected || PS_MRSelectedRelayPoint['carrier_id'] == carrier_selected)
+			{
 				var _return = !(PS_MRSelectedRelayPoint['carrier_id'] && !PS_MRSelectedRelayPoint['relayPointNum']);
 				if (!_return)
 					alert(PS_MRTranslationList['errorSelection']);
 				return _return;
-			});
-			
-			if (typeof PS_MRData != 'undefined')
-			{
-				if (PS_MRData.PS_VERSION < '1.5') {
-					$('input[name="id_carrier"]').click(function(){
-						checkToDisplayRelayList();
-					});
-				}
 			}
+		});
+		
+		if (typeof PS_MRData != 'undefined')
+		{
+			if (PS_MRData.PS_VERSION < '1.5') {
+				$('input[name="id_carrier"]').click(function(){
+					checkToDisplayRelayList();
+				});
+			}
+		}
 	});

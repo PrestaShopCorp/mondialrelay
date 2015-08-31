@@ -347,9 +347,9 @@ class MRCreateTickets implements IMondialRelayWSMethod
 				$tmp['NDossier']['value'] = $orderDetail['id_order'];
 				$tmp['NClient']['value'] = $orderDetail['id_customer'];
 				$tmp['Dest_Langage']['value'] = 'FR'; //Language::getIsoById($orderDetail['id_lang']);
-				$tmp['Dest_Ad1']['value'] = preg_replace(MRTools::REGEX_CLEAN_ADDR, '', Tools::substr($deliveriesAddress->firstname.' '.$deliveriesAddress->lastname, 0, 32));
-				$tmp['Dest_Ad2']['value'] = preg_replace(MRTools::REGEX_CLEAN_ADDR, '', Tools::substr($deliveriesAddress->address2, 0, 32));
-				$tmp['Dest_Ad3']['value'] = preg_replace(MRTools::REGEX_CLEAN_ADDR, '', Tools::substr($deliveriesAddress->address1, 0, 32));
+				$tmp['Dest_Ad1']['value'] = preg_replace(MRTools::REGEX_CLEAN_ADDR, '', Tools::substr(MRTools::removeAccents($deliveriesAddress->firstname.' '.$deliveriesAddress->lastname), 0, 32));
+				$tmp['Dest_Ad2']['value'] = preg_replace(MRTools::REGEX_CLEAN_ADDR, '', Tools::substr(MRTools::removeAccents($deliveriesAddress->address2), 0, 32));
+				$tmp['Dest_Ad3']['value'] = preg_replace(MRTools::REGEX_CLEAN_ADDR, '', Tools::substr(MRTools::removeAccents($deliveriesAddress->address1), 0, 32));
 				$tmp['Dest_Ville']['value'] = $deliveriesAddress->city;
 				$tmp['Dest_CP']['value'] = $deliveriesAddress->postcode;
 				$tmp['Dest_CP']['params']['id_country'] = $deliveriesAddress->id_country;

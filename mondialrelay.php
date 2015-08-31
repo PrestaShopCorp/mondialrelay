@@ -72,7 +72,7 @@ class MondialRelay extends Module
 	{
 		$this->name		= 'mondialrelay';
 		$this->tab		= 'shipping_logistics';
-		$this->version	= '2.1.1';
+		$this->version	= '2.1.2';
 		$this->installed_version = '';
 		$this->module_key = '366584e511d311cfaa899fc2d9ec1bd0';
 		$this->author = 'PrestaShop';

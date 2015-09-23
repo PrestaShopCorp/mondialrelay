@@ -26,7 +26,7 @@
 
 if (!defined('_PS_VERSION_'))
 	exit;
-	
+
 require_once(_PS_MODULE_DIR_.'mondialrelay/classes/MRTools.php');
 
 class MondialRelay extends Module
@@ -52,7 +52,7 @@ class MondialRelay extends Module
 	/* SQL FILTER ORDER */
 	const NO_FILTER = 0;
 	const WITHOUT_HOME_DELIVERY = 1;
-	
+
 	const MR_URL = 'http://www.mondialrelay.fr/';
 
 	/* Contains the details of the current shop used */
@@ -72,7 +72,7 @@ class MondialRelay extends Module
 	{
 		$this->name		= 'mondialrelay';
 		$this->tab		= 'shipping_logistics';
-		$this->version	= '2.1.2';
+		$this->version	= '2.1.3';
 		$this->installed_version = '';
 		$this->module_key = '366584e511d311cfaa899fc2d9ec1bd0';
 		$this->author = 'PrestaShop';
@@ -102,9 +102,9 @@ class MondialRelay extends Module
 			$this->_errors[] = $this->l('Mondial Relay needs SOAP & cURL to be installed on your server.');
 			return false;
 		}
-		
+
 		if (!parent::install())
-			return false;		
+			return false;
 
 		if (!$this->registerHookByVersion())
 			return false;
@@ -125,7 +125,7 @@ class MondialRelay extends Module
 			WHERE class_name="AdminMondialRelay"');
 
 		if (!$result)
-		{	
+		{
 			$tab = new Tab();
 			$languages = Language::getLanguages(false);
 			foreach ($languages as $language)
@@ -243,7 +243,7 @@ class MondialRelay extends Module
 		$files_version = array('1.8.0', '1.8.3', '2.0.6');
 
 		$upgrade_path = dirname(__FILE__).'/upgrade/';
-		
+
 		if (version_compare(_PS_VERSION_, '1.5', '<'))
 		{
 			foreach ($files_version as $version)
@@ -309,10 +309,10 @@ class MondialRelay extends Module
 	{
 		/*  Get default value */
 		$id_order_state = $this->account_shop['MR_ORDER_STATE'];
-		
+
 		if (($account_shop_stored = MondialRelay::getAccountDetail()))
 			$this->account_shop = $account_shop_stored;
-			
+
 		/*  Normally, this can't happen...  */
 		if (empty($this->account_shop['MR_ORDER_STATE']))
 			$this->account_shop['MR_ORDER_STATE'] = $id_order_state;
@@ -342,38 +342,38 @@ class MondialRelay extends Module
 	{
 		if (!MondialRelay::isMondialRelayCarrier($params['cart']->id_carrier))
 			return;
-			
+
 		$order = $params['order'];
 		$currency = $params['currency'];
 		$id_lang = (int)$order->id_lang;
 		$customer = new Customer($order->id_customer);
-		$carrier = new Carrier($order->id_carrier);		
+		$carrier = new Carrier($order->id_carrier);
 		$invoice = new Address((int)($order->id_address_invoice));
 		$invoice_state = $invoice->id_state ? new State($invoice->id_state) : false;
 		if (version_compare(_PS_VERSION_, '1.5', '<'))
 			$order_date_text = Tools::displayDate($order->date_add, (int)($id_lang));
 		else
 			$order_date_text = Tools::displayDate($order->date_add, null);
-		
+
 		DB::getInstance()->execute('
 		UPDATE `'._DB_PREFIX_.'mr_selected`
 		SET `id_order` = '.(int)$order->id.'
 		WHERE `id_cart` = '.(int)$params['cart']->id);
-		
+
 		/*============================================
 		// GET MR INFOS
 		//============================================*/
 		$sql = 'SELECT * FROM `'._DB_PREFIX_.'mr_selected` WHERE `id_cart` = '.(int)$params['cart']->id.' AND `id_order` = '.(int)$order->id.'';
 		$mr_point = DB::getInstance()->getRow($sql);
-		
+
 		if (!$mr_point['MR_Selected_Num']) return false;
-		
+
 		/*============================================
 		// SEND MAIL
 		//============================================*/
 		$template = 'mr_new_order';
 		$subject = $this->l('New order', false, (int)$id_lang).' - '.sprintf('%06d', $order->id);
-		
+
 		$mr_address = '';
 		if ($mr_point['MR_Selected_LgAdr2'])
 			$mr_address .= $mr_point['MR_Selected_LgAdr2'].'';
@@ -385,11 +385,11 @@ class MondialRelay extends Module
 		$templateVars = array(
 			'{firstname}' => $customer->firstname,
 			'{lastname}' => $customer->lastname,
-			'{email}' => $customer->email,			
-			'{delivery_company}' => $mr_point['MR_Selected_LgAdr1'],			
-			'{delivery_address1}' => $mr_address,			
-			'{delivery_city}' => $mr_point['MR_Selected_Ville'],		
-			'{delivery_postal_code}' => $mr_point['MR_Selected_CP'],		
+			'{email}' => $customer->email,
+			'{delivery_company}' => $mr_point['MR_Selected_LgAdr1'],
+			'{delivery_address1}' => $mr_address,
+			'{delivery_city}' => $mr_point['MR_Selected_Ville'],
+			'{delivery_postal_code}' => $mr_point['MR_Selected_CP'],
 			'{delivery_country}' => $mr_point['MR_Selected_Pays'],
 			'{invoice_company}' => $invoice->company,
 			'{invoice_firstname}' => $invoice->firstname,
@@ -409,14 +409,14 @@ class MondialRelay extends Module
 			'{payment}' => Tools::substr($order->payment, 0, 32),
 			'{currency}' => $currency->sign,
 		);
-		
+
 		$iso = Language::getIsoById((int)$id_lang);
 		if (file_exists(dirname(__FILE__).'/mails/'.$iso.'/'.$template.'.txt') && file_exists(dirname(__FILE__).'/mails/'.$iso.'/'.$template.'.html'))
 			Mail::Send((int)$id_lang, $template, $subject, $templateVars, $customer->email, $customer->firstname.' '.$customer->lastname, Configuration::get('PS_SHOP_EMAIL'), Configuration::get('PS_SHOP_NAME'), null, null, dirname(__FILE__).'/mails/');
 	}
 
 	public function hookBackOfficeHeader()
-	{		 
+	{
 		if (Tools::getValue('tab') == 'AdminMondialRelay' || Tools::getValue('module_name') == 'mondialrelay' || Tools::strtolower(Tools::getValue('controller')) == 'adminmondialrelay' || Tools::getValue('configure') == 'mondialrelay')
 		{
 			$this->context->smarty->assign(array(
@@ -425,7 +425,7 @@ class MondialRelay extends Module
 
 			return $this->fetchTemplate('/views/templates/admin/', 'bo-header');
 		}
-	} 
+	}
 
 	public function hookOrderDetailDisplayed($params)
 	{
@@ -434,23 +434,23 @@ class MondialRelay extends Module
 
 		$sql = '
 			SELECT s.`MR_Selected_LgAdr1`, s.`MR_Selected_LgAdr2`, s.`MR_Selected_LgAdr3`, s.`MR_Selected_LgAdr4`,
-			 s.`MR_Selected_CP`, s.`MR_Selected_Ville`, s.`MR_Selected_Pays`, s.`MR_Selected_Num`, s.`url_suivi`, s.`exp_number`, m.dlv_mode 
+			 s.`MR_Selected_CP`, s.`MR_Selected_Ville`, s.`MR_Selected_Pays`, s.`MR_Selected_Num`, s.`url_suivi`, s.`exp_number`, m.dlv_mode
 			FROM `'._DB_PREFIX_.'mr_selected` s
-			INNER JOIN  '._DB_PREFIX_.'mr_method m ON m.id_mr_method = s.id_method 
-			WHERE s.`id_cart` = '.(int)$params['order']->id_cart; 
+			INNER JOIN  '._DB_PREFIX_.'mr_method m ON m.id_mr_method = s.id_method
+			WHERE s.`id_cart` = '.(int)$params['order']->id_cart;
 		$res = Db::getInstance()->getRow($sql);
 
 		if (!$res)
 			return;
-		
+
 		$point_relais = $res['MR_Selected_LgAdr1'].
 					($res['MR_Selected_LgAdr1'] ? ' <br/> ' : '').$res['MR_Selected_LgAdr2'].
 					($res['MR_Selected_LgAdr2'] ? ' <br/> ' : '').$res['MR_Selected_LgAdr3'].
 					($res['MR_Selected_LgAdr3'] ? ' <br/> ' : '').$res['MR_Selected_LgAdr4'].
 					($res['MR_Selected_LgAdr4'] ? ' <br/> ' : '').$res['MR_Selected_CP'].' '.
 					$res['MR_Selected_Ville'].' <br/> '.$res['MR_Selected_Pays'];
-			
-		
+
+
 		if (($res['dlv_mode'] == 'LD1') || ($res['dlv_mode'] == 'LDS') || ($res['dlv_mode'] == 'HOM'))
 			$this->context->smarty->assign(
 				array(
@@ -560,13 +560,13 @@ class MondialRelay extends Module
 	}
 
 	/*
-	** Added to be used properly with OPC 
+	** Added to be used properly with OPC
 	*/
 	public function hookHeader($params)
 	{
 		if (version_compare(_PS_VERSION_, '1.5', '>='))
 			$this->context->controller->addJquery();
-		
+
 		/*Configuration::updateValue('MONDIAL_RELAY_MODE', 'widget');*/
 		if (!($file = basename(Tools::getValue('controller'))))
 			$file = str_replace('.php', '', basename($_SERVER['SCRIPT_NAME']));
@@ -577,7 +577,7 @@ class MondialRelay extends Module
 					'one_page_checkout' => (Configuration::get('PS_ORDER_PROCESS_TYPE') ? Configuration::get('PS_ORDER_PROCESS_TYPE') : 0),
 					'new_base_dir' => MondialRelay::$moduleURL,
 					'MR_local_path' => MondialRelay::$modulePath,
-					'MRToken' => MondialRelay::$MRFrontToken, 
+					'MRToken' => MondialRelay::$MRFrontToken,
 					'MR_MONDIAL_RELAY_MODE' => Configuration::get('MONDIAL_RELAY_MODE'),
 				)
 			);
@@ -623,7 +623,7 @@ class MondialRelay extends Module
 
 		/*  Check if the defined carrier are ok */
 		foreach ($carriersList as $k => $row)
-		{ 
+		{
 			/*  For now works only with single shipping (>= 1.5 compatibility) */
 			if (method_exists($this->context->cart, 'carrierIsSelected'))
 			{
@@ -670,7 +670,7 @@ class MondialRelay extends Module
 			'ssl' => $ssl,
 			'MR_Data'=> MRTools::jsonEncode(array(
 				'carrier_list' => $carriersList,
-				'carrier' => $carrier,				
+				'carrier' => $carrier,
 				'PS_VERSION' => _PS_VERSION_,
 				'pre_selected_relay' => isset($preSelectedRelay['MR_selected_num']) ? $preSelectedRelay['MR_selected_num'] : -1,
 			))
@@ -752,8 +752,8 @@ class MondialRelay extends Module
 			if (!Validate::isUnsignedInt(Tools::getValue('id_order_state')))
 				$this->_postErrors[] = $this->l('Invalid order state');
 		}
-		
-		
+
+
 	}
 
 	/**
@@ -762,7 +762,7 @@ class MondialRelay extends Module
 	 * @return bool
 	 */
 	public function updateAccountShop()
-	{ 
+	{
 		return Configuration::updateValue('MR_ACCOUNT_DETAIL', serialize($this->account_shop));
 	}
 
@@ -772,13 +772,13 @@ class MondialRelay extends Module
 	 * @return array
 	 */
 	private function _postProcess()
-	{ 
+	{
 		$post_action = array(
 			'type' =>Tools::safeOutput(Tools::getValue('MR_tab_name')),
 			'message_success' => $this->l('Action Succeed'),
 			'had_errors' => false
 		);
-		
+
 		if (Tools::isSubmit('submitAdvancedSettings'))
 			Configuration::updateValue('MONDIAL_RELAY_MODE', Tools::getValue('mode', 'widget'));
 		else if (Tools::isSubmit('submit_account_detail'))
@@ -824,7 +824,7 @@ class MondialRelay extends Module
 			$this->_postValidation();
 			if (!count($this->_postErrors))
 				$post_action = $this->_postProcess();
-		} 
+		}
 		$carriers_list = Db::getInstance()->executeS('
 			SELECT m.*
 			FROM `'._DB_PREFIX_.'mr_method` m
@@ -841,7 +841,7 @@ class MondialRelay extends Module
 				'MR_token_admin_performance' => Tools::getAdminToken('AdminPerformance'.(int)(Tab::getIdFromClassName('AdminPerformance')).(int)($this->context->cookie->id_employee)),
 				'MR_token_admin_carriers' => (version_compare(_PS_VERSION_, '1.6', '<') ? Tools::getAdminToken('AdminCarriers'.(int)(Tab::getIdFromClassName('AdminCarriers')).(int)$this->context->employee->id) : Tools::getAdminToken('AdminCarrierWizard'.(int)(Tab::getIdFromClassName('AdminCarrierWizard')).(int)$this->context->employee->id)),
 				'MR_token_admin_contact' => array(
-					'controller_name' => $controller, 
+					'controller_name' => $controller,
 					'token' => Tools::getAdminToken($controller.(int)(Tab::getIdFromClassName($controller)).(int)$this->context->employee->id)),
 				'MR_token_admin_mondialrelay' => Tools::getAdminToken('AdminMondialRelay'.(int)(Tab::getIdFromClassName('AdminMondialRelay')).(int)$this->context->employee->id),
 				'MR_token_admin_module' => Tools::getAdminToken('AdminModules'.(int)(Tab::getIdFromClassName('AdminModules')).(int)$this->context->employee->id),
@@ -902,19 +902,19 @@ class MondialRelay extends Module
 		}
 		return $ret ? $carrier->id : false;
 	}
-	
+
 	public function displayInfoByCart($id_cart)
 	{
 		$html = '<p>';
 		$simpleresul = Db::getInstance()->executeS('
-			SELECT * FROM '._DB_PREFIX_.'mr_selected 
-			WHERE id_cart='.(int)($id_cart)); 
-			
-		if (isset($simpleresul[0])) 
+			SELECT * FROM '._DB_PREFIX_.'mr_selected
+			WHERE id_cart='.(int)($id_cart));
+
+		if (isset($simpleresul[0]))
 		{
-			if (trim($simpleresul[0]['exp_number']) != '') 
+			if (trim($simpleresul[0]['exp_number']) != '')
 				$html .= $this->l('Nb expedition:').$simpleresul[0]['exp_number'].'<br>';
-			if (trim($simpleresul[0]['url_etiquette']) != '') 
+			if (trim($simpleresul[0]['url_etiquette']) != '')
 				$html .= '<a href="'.$simpleresul[0]['url_etiquette'].'" target="etiquette'.$simpleresul[0]['url_etiquette'].'">'.$this->l('Label URL').'</a><br>';
 			if (trim($simpleresul[0]['url_suivi']) != '')
 				$html .= '<a href="'.$simpleresul[0]['url_suivi'].'" target="suivi'.$simpleresul[0]['exp_number'].'">'.$this->l('Follow-up URL').'</a><br>';
@@ -1073,7 +1073,7 @@ class MondialRelay extends Module
 				FROM `'._DB_PREFIX_.'mr_method`
 				WHERE `id_mr_method` = '.(int)($id_mr_method))) &&
 			Db::getInstance()->execute(
-				'UPDATE `'._DB_PREFIX_.'carrier` c, `'._DB_PREFIX_.'mr_method` m 
+				'UPDATE `'._DB_PREFIX_.'carrier` c, `'._DB_PREFIX_.'mr_method` m
 				SET c.`active` = 0, c.`deleted` = 1, m.`is_deleted` = 1
 				WHERE
 				 	c.`id_carrier` = m.`id_carrier`
@@ -1119,33 +1119,33 @@ class MondialRelay extends Module
 							CONCAT(c.`firstname`, " ", c.`lastname`) AS `customer`,
 							o.`total_paid_real` as total, o.`total_shipping` as shipping,
 							o.`date_add` as date, o.`id_currency` as id_currency, o.`id_lang` as id_lang,
-							mrs.`MR_poids` as mr_weight, 
-							mrs.`MR_insurance` as mr_insurance, 
+							mrs.`MR_poids` as mr_weight,
+							mrs.`MR_insurance` as mr_insurance,
 							mr.`name` as mr_Name, mrs.`MR_Selected_Num` as MR_Selected_Num,
 							mrs.`MR_Selected_Pays` as MR_Selected_Pays, mrs.`exp_number` as exp_number,
 							mr.`col_mode` as mr_ModeCol, mr.`dlv_mode` as mr_ModeLiv, mr.`insurance` as mr_ModeAss,
 							ROUND(SUM(odt.`product_weight` * odt.`product_quantity`)  * '.(int)$weight_coefficient.') AS "order_weight"
-			FROM 
+			FROM
 				`'._DB_PREFIX_.'orders` o
-			LEFT JOIN 
+			LEFT JOIN
 				`'._DB_PREFIX_.'carrier` ca
 			ON (ca.`id_carrier` = o.`id_carrier`)
-			LEFT JOIN 
+			LEFT JOIN
 				`'._DB_PREFIX_.'mr_selected` mrs
 			ON (mrs.`id_cart` = o.`id_cart`)
-			LEFT JOIN 
+			LEFT JOIN
 				`'._DB_PREFIX_.'mr_method` mr
 			ON (mr.`id_carrier` = ca.`id_carrier`)
-			LEFT JOIN 
+			LEFT JOIN
 				`'._DB_PREFIX_.'customer` c
 			ON (c.`id_customer` = o.`id_customer`)
-			LEFT JOIN 
+			LEFT JOIN
 				`'._DB_PREFIX_.'order_detail` odt
 			ON odt.`id_order` = o.`id_order`
 			WHERE (
-				SELECT moh.`id_order_state` 
-				FROM `'._DB_PREFIX_.'order_history` moh 
-				WHERE moh.`id_order` = o.`id_order` 
+				SELECT moh.`id_order_state`
+				FROM `'._DB_PREFIX_.'order_history` moh
+				WHERE moh.`id_order` = o.`id_order`
 				ORDER BY moh.`date_add` DESC LIMIT 1) = '.(int)($id_order_state).'
 			AND o.`id_order` = mrs.`id_order`';
 	}
@@ -1221,7 +1221,7 @@ class MondialRelay extends Module
 			FROM `'._DB_PREFIX_.'mr_method` m
 			WHERE `id_carrier` = '.(int)$id_carrier);
 	}
-	
+
 	public function getMethodValueByIdCarier($id_carrier, $key)
 	{
 		$content = Db::getInstance()->executeS(

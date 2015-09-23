@@ -42,6 +42,13 @@ class AdminMondialRelay extends AdminTab
 	
 		parent::__construct();
 		$this->context = Context::getContext();
+		$datas = array(
+			'display_header' => true,
+			'display_header_javascript' => true,
+			'display_footer' => true,
+		);
+		
+		$this->context->smarty->assign($datas);
 	}
 
 	private function displayOrdersTable()
@@ -150,6 +157,7 @@ class AdminMondialRelay extends AdminTab
 
 	public function display()
 	{
+
 		$post_action = count($_POST) ? $this->postProcess() : null;
 
 		$this->displaySettings($post_action);

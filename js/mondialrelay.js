@@ -605,6 +605,12 @@ var PS_MRObject = (function($, undefined) {
 			alert(PS_MRTranslationList['errorSelection']);
 			return false;
 		}
+		// No relay point selected yet
+		if (PS_MRSelectedRelayPoint['relayPointNum'] == -1)
+		{
+			alert(PS_MRTranslationList['errorSelection']);
+			return false;
+		}
 		return true;
 	}
 

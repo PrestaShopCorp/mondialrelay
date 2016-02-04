@@ -1176,7 +1176,6 @@ var PS_MRObject = (function($, undefined) {
 					// Hide MR input if one of them is not selected 
 					if($(e).val() == carrier_selected)
 					{
-						console.log(carrier_selected);
 						if(MR_carrier != false) {
 							PS_MRCarrierMethodList[MR_idcarrier] = MR_carrier.id_mr_method;
 							PS_MRSelectedRelayPoint['carrier_id'] = MR_idcarrier; 
@@ -1197,6 +1196,7 @@ var PS_MRObject = (function($, undefined) {
 					}
 				});
 			}
+                        
 		}
 	}
 	
@@ -1307,6 +1307,7 @@ var PS_MRObject = (function($, undefined) {
 	return {
 		initFront : function() {
 			checkToDisplayRelayList();
+                        setProtectRelaySelected();
 		},
 		uninstall : function(url)
 		{

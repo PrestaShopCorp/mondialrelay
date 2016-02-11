@@ -114,8 +114,16 @@ function setProtectRelaySelected(){
 (function($) {
     
     $(function(){  
-      
-        //setProtectRelaySelected();
+		$('#cgv').click(function(){
+			if($(this).attr('checked')){
+				$("body").bind("ajaxComplete", function(e, xhr, settings){
+					   setProtectRelaySelected();
+					   
+				});
+				
+			}
+		});
+        
         
     });
 })(jQuery);

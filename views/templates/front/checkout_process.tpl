@@ -24,6 +24,10 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 
+<noscript>
+    <h3 style="color: red;">{l s='JavaScript is disabled on your browser, please enable it in order to select a Point Relais®.' mod='mondialrelay'}</h3>
+</noscript>
+
 <script type="text/javascript">	
 	// Global JS Value
 	var PS_MRData = {$MR_Data};

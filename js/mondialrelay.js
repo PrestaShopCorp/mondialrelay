@@ -1176,7 +1176,6 @@ var PS_MRObject = (function($, undefined) {
 					// Hide MR input if one of them is not selected 
 					if($(e).val() == carrier_selected)
 					{
-						console.log(carrier_selected);
 						if(MR_carrier != false) {
 							PS_MRCarrierMethodList[MR_idcarrier] = MR_carrier.id_mr_method;
 							PS_MRSelectedRelayPoint['carrier_id'] = MR_idcarrier; 
@@ -1197,6 +1196,7 @@ var PS_MRObject = (function($, undefined) {
 					}
 				});
 			}
+                        
 		}
 	}
 	
@@ -1281,20 +1281,7 @@ var PS_MRObject = (function($, undefined) {
 			$('#MR_config_menu').children('ul').css('margin-left', width + 'px');
 		}
 		
-		// 1.5 OPC Validation - Warn user to select a relay point
-			$('.payment_module a').live('click', function() {
-                            if (typeof PS_MRData != 'undefined')
-                            {
-				if (PS_MRData.PS_VERSION >= '1.5' && PS_MRData.carrier)
-				{
-					var _return = !(!PS_MRSelectedRelayPoint['carrier_id'] || !PS_MRSelectedRelayPoint['relayPointNum']);
-					if (!_return)
-						alert(PS_MRTranslationList['errorSelection']);
-					return _return;
-				}
-                            }
-			});
-			
+
 			// If MR carrier selected, check MR relay point is selected too
 			$('input[name=processCarrier], button[name=processCarrier]').click(function(){  
 				var _return = !(PS_MRSelectedRelayPoint['carrier_id'] && !PS_MRSelectedRelayPoint['relayPointNum']);
@@ -1320,6 +1307,7 @@ var PS_MRObject = (function($, undefined) {
 	return {
 		initFront : function() {
 			checkToDisplayRelayList();
+                        setProtectRelaySelected();
 		},
 		uninstall : function(url)
 		{
@@ -1359,3 +1347,5 @@ function mr_checkConnexion() {
 		} 
 	});
 }
+
+

@@ -24,99 +24,41 @@
 */
 
 function checkMrSelection() { 
-    
+
     if (PS_MRData.PS_VERSION < '1.5') {
         var selected_carrier_id = $('input[name=id_carrier]:checked').val();
     } else {
         var selected_carrier_id = parseInt($('.delivery_option_radio:checked').val());
     }   
-    
+    /*
+    console.log(PS_MRData.PS_VERSION);     
+    console.log(selected_carrier_id);  
+    console.log(PS_MRSelectedRelayPoint['carrier_id']);
+    console.log(PS_MRSelectedRelayPoint['relayPointNum']);
+    */
     var MR_carrier_selected = (selected_carrier_id==PS_MRSelectedRelayPoint['carrier_id']); // is a mondial relay carrier ?
     var MR_relay_selected = (PS_MRSelectedRelayPoint['relayPointNum']>0);                   // a relay has been selected ?
 
-    if (!MR_carrier_selected) 
+    if (!MR_carrier_selected) {
         return true; 
-    
-    if (MR_relay_selected) {
+    } else if (MR_relay_selected) {
         return true; 
     } else {
-        if (!!$.prototype.fancybox && !(PS_MRData.PS_VERSION < '1.5'))
-           $.fancybox.open([
-            {
-                type: 'inline',
-                autoScale: true,
-                minHeight: 30,
-                content: '<p class="fancybox-error">' + PS_MRTranslationList['errorSelection'] + '</p>'
-            }],
-            {
-                padding: 0
-            });
-        else
-            alert(PS_MRTranslationList['errorSelection']);
-        
+        alert(PS_MRTranslationList['errorSelection']);
         return false;
     }
 }
 
-function isOnePageCheckout(){
-  
-    if($('.payment_module a').length && typeof(PS_MRData) != 'undefined'){
-        return true;
-    }
-    return false;
-}
+$(document).ready(function() {
 
-function setProtectRelaySelected(){
-    if(isOnePageCheckout()){
-            $('.payment_module a').each(function(){
-                if(typeof($(this).attr('onclick'))!='undefined'){
-                    $(this).data('onclick', $(this).attr('onclick'));
-                    $(this).attr('onclick', '');
-                }
-            });  
-            
-            //OPC Validation - Warn user to select a relay point
-            $('.payment_module').click(function(event) {
-                if(!checkMrSelection()){
-                    event.stopPropagation();
-                    return false;
-                }
-                else{
-                    var lien= $('a', $(this));
-                    if( lien.is("[onclick]") && lien.attr('onclick') == '' ){
-                        lien.attr('onclick', lien.data('onclick'));
-                        lien.trigger('click');
-                    }
-                }
-            });
-
-            $('form').submit(function(event) {
-
-                if(checkMrSelection()){
-                    $(this).off('submit').submit();
-
-                }
-                event.stopPropagation();
-                return false;
-            });	
-           
-        }
-        
-        $('#form button[name="processCarrier"], #form input[name="processCarrier"]').click(function(event) {
-            if(!checkMrSelection()){
-                event.stopPropagation();
-                return false;
-            }	
-        });
-        
-}
-
-(function($) {
-    
-    $(function(){  
-      
-        //setProtectRelaySelected();
-        
+	$('#form button[name="processCarrier"], #form input[name="processCarrier"]').click(function(event) {
+		return checkMrSelection();   
     });
-})(jQuery);
+
+    //OPC Validation - Warn user to select a relay point
+    $(document).on('click', '.payment_module', function() {
+        return checkMrSelection();
+    });
+
+});
 

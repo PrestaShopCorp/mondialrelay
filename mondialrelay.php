@@ -72,7 +72,7 @@ class MondialRelay extends Module
     {
         $this->name        = 'mondialrelay';
         $this->tab        = 'shipping_logistics';
-        $this->version    = '2.1.5';
+        $this->version    = '2.1.4';
         $this->installed_version = '';
         $this->module_key = '366584e511d311cfaa899fc2d9ec1bd0';
         $this->author = 'PrestaShop';
@@ -599,8 +599,8 @@ class MondialRelay extends Module
 
     private function canAddJSViaController()
     {
-        if(version_compare(_PS_VERSION_, '1.5', '<'))
-            return false;
+        if(version_compare(_PS_VERSION_, '1.6', '>='))
+            return true;
 
         if(Configuration::get('PS_JS_THEME_CACHE'))
             return false;

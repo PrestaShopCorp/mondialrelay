@@ -884,13 +884,6 @@ class MondialRelay extends Module
     {
         $ret = false;
 
-        if(empty($name)){
-            return false;
-        }
-        if(empty($delay)){
-            return false;
-        }
-
         if (($carrier = new Carrier()))
         {
             $delay_lang = array();

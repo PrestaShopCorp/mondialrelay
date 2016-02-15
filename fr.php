@@ -217,9 +217,7 @@ $_MODULE['<{mondialrelay}prestashop>settings_d02bbc3cb147c272b0445ac5ca7d1a36'] 
 $_MODULE['<{mondialrelay}prestashop>settings_ca57625685f058f54d82c6e05876a131'] = 'Choississez le statut pour la génération d\'étiquette.';
 $_MODULE['<{mondialrelay}prestashop>settings_c9cc8cce247e49bae79f15173ce97354'] = 'Sauvegarder';
 $_MODULE['<{mondialrelay}prestashop>settings_f4f70727dc34561dfde1a3c529b6205c'] = 'Paramètres';
-$_MODULE['<{mondialrelay}prestashop>checkout_process_50fa1af2938c04e8fb499c483c1fecb8'] = 'Le JavaScript n\'est pas activé sur votre navigateur, nous vous invitons à l’activer afin de sélectionner un Point Relais® lors de votre commande.';
 $_MODULE['<{mondialrelay}prestashop>checkout_process_836f6c949a2f2d61489bf410def82111'] = 'Mondialrelay ne peut récupérer les points relais du à une erreur de Prestashop';
-$_MODULE['<{mondialrelay}prestashop>checkout_process_widget_50fa1af2938c04e8fb499c483c1fecb8'] = 'Le JavaScript n\'est pas activé sur votre navigateur, nous vous invitons à l’activer afin de sélectionner un Point Relais® lors de votre commande.';
 $_MODULE['<{mondialrelay}prestashop>checkout_process_widget_ad3d06d03d94223fa652babc913de686'] = 'Valider votre Point Relais®';
 $_MODULE['<{mondialrelay}prestashop>checkout_process_widget_b5cdf9b63fda35c33bb5e35cc3716b95'] = 'Point Relais® sélectionné :';
 $_MODULE['<{mondialrelay}prestashop>header_e0626222614bdee31951d84c64e5e9ff'] = 'Choisir';

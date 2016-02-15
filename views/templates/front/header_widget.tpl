@@ -29,7 +29,6 @@
 {/if}
 
 <!--On charge le widget mondial relay depuis leurs serveurs-->  
-<script type="text/javascript" src="{$new_base_dir|escape:'htmlall':'UTF-8'}js/common.js"></script>
 <script type="text/javascript" src="{$new_base_dir|escape:'htmlall':'UTF-8'}js/jquery.plugin.mondialrelay.parcelshoppicker.2.0.0.js"></script> 
 <script type="text/javascript" src="{$new_base_dir|escape:'htmlall':'UTF-8'}js/mondialrelay_widget.js"></script>
 

@@ -37,7 +37,7 @@
 	
 	PS_MRTranslationList['Select'] = "{l s='Select' mod='mondialrelay'}";
 	PS_MRTranslationList['Selected'] = "{l s='Selected' mod='mondialrelay'}";
-	PS_MRTranslationList['errorSelection'] = "{l s='Please choose a relay point' mod='mondialrelay'}";
+	PS_MRTranslationList['errorSelection'] = "{l s='Please choose a relay point' mod='mondialrelay' js=1}";
 	PS_MRTranslationList['openingRelay'] = "{l s='Opening hours' mod='mondialrelay'}";
 	PS_MRTranslationList['moreDetails'] = "{l s='More details' mod='mondialrelay'}";
 </script>

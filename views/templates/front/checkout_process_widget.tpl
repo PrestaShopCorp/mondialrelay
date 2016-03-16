@@ -135,8 +135,8 @@
 	$(document).ready(function () {  
 		
 		//loadMR_Map("#Zone_Widget", "24R");
-		
-		//setTimeout(function(){ 
+		// settimeout utiliser pour la connection de l'utilisateur en opc
+		setTimeout(function(){ 
 			$("#link_zone_widget").fancybox(
 			{
 				width		:	705, 
@@ -158,7 +158,7 @@
 				}
 			});
 			checkToDisplayRelayList();		
-		//},1500);
+		},1000);
 		
 		
 	});

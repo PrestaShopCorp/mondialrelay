@@ -72,7 +72,7 @@ class MondialRelay extends Module
     {
         $this->name        = 'mondialrelay';
         $this->tab        = 'shipping_logistics';
-        $this->version    = '2.1.5';
+        $this->version    = '2.1.7';
         $this->installed_version = '';
         $this->module_key = '366584e511d311cfaa899fc2d9ec1bd0';
         $this->author = 'PrestaShop';
@@ -481,7 +481,7 @@ class MondialRelay extends Module
             /*  Insert new entry keeping the last one linked to the id_carrier */
             $query = '
                 INSERT INTO `'._DB_PREFIX_.'mr_method`
-                (name, country_list, col_mode, dlv_mode, insurance, id_carrier)
+                (name, country_list, col_mode, dlv_mode, insurance, id_carrier, is_deleted)
                 (
                     SELECT
                         "'.pSQL($params['carrier']->name).'",
@@ -489,7 +489,8 @@ class MondialRelay extends Module
                         col_mode,
                         dlv_mode,
                         insurance,
-                        '.(int)$params['carrier']->id.'
+                        '.(int)$params['carrier']->id.',
+						0
                     FROM `'._DB_PREFIX_.'mr_method`
                     WHERE id_carrier ='.(int)$params['id_carrier'].')';
             Db::getInstance()->execute($query);
@@ -1046,7 +1047,8 @@ class MondialRelay extends Module
         /*  Force col mod to CCC */
         $fields['col_mode'] = 'CCC';
         $fields['id_carrier'] = $id_carrier;
-
+		$fields['is_deleted'] = 0;
+		
         $query = 'INSERT INTO `'._DB_PREFIX_.'mr_method` (%s) VALUES(%s)';
 
         $keys = array();

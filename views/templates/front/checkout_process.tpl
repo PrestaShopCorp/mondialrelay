@@ -34,7 +34,10 @@
 	{assign var=MR_Data value=$MR_Data|json_decode:1}
 	// literal for smarty v2 compatibility
 	$(document).ready(function() {literal}{{/literal}
-		PS_MRObject.initFront();
+		// settimeout utiliser pour la connection de l'utilisateur en opc
+		setTimeout(function(){ 
+			PS_MRObject.initFront();
+		},1000);
 	{literal}}{/literal});
 </script>
 {*if $MR_Data.PS_VERSION >= '1.5' && !$MR_Data.carrier}

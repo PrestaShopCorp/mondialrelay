@@ -1281,7 +1281,7 @@ var PS_MRObject = (function($, undefined) {
 			$('#MR_config_menu').children('ul').css('margin-left', width + 'px');
 		}
 		
-
+/*
 			// If MR carrier selected, check MR relay point is selected too
 			$('input[name=processCarrier], button[name=processCarrier]').click(function(){  
 				var _return = !(PS_MRSelectedRelayPoint['carrier_id'] && !PS_MRSelectedRelayPoint['relayPointNum']);
@@ -1290,15 +1290,14 @@ var PS_MRObject = (function($, undefined) {
 				
 				return _return;
 			});
-			
-			if (typeof PS_MRData != 'undefined')
+*/
+		// En OPC, si l'utilisateur est déconnecter, PS_MRData n'existe pas au début
+		$('input[name="id_carrier"]').live('click', function(){
+			if (typeof PS_MRData != 'undefined' && PS_MRData.PS_VERSION < '1.5')
 			{
-				if (PS_MRData.PS_VERSION < '1.5') {
-					$('input[name="id_carrier"]').click(function(){
-						checkToDisplayRelayList();
-					});
-				}
+				checkToDisplayRelayList();
 			}
+		});
 			
 			// Handle input click of the other input to hide the previous relay point list displayed
 	});
@@ -1307,7 +1306,7 @@ var PS_MRObject = (function($, undefined) {
 	return {
 		initFront : function() {
 			checkToDisplayRelayList();
-                        setProtectRelaySelected();
+            setProtectRelaySelected();
 		},
 		uninstall : function(url)
 		{

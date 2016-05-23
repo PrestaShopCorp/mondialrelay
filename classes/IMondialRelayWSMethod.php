@@ -33,25 +33,25 @@ require_once(realpath(dirname(__FILE__).'/../mondialrelay.php'));
  */
 interface IMondialRelayWSMethod
 {
-	/*
-	 * Initiate the data needed to be send properly
-	 * Can manage a list of data for multiple request
-	 */
-	public function init();
-	
-	/*
-	 * Send one or multiple request to the webservice
-	 */
-	public function send();
-	
-	/*
-	 * Get the values with associated fields name
-	 */
-	public function getFieldsList();
-	
-	/*
-	 * Get the result of one or multiple send request
-	 */
-	public function getResult();
+    /*
+     * Initiate the data needed to be send properly
+     * Can manage a list of data for multiple request
+     */
+    public function init();
+    
+    /*
+     * Send one or multiple request to the webservice
+     */
+    public function send();
+    
+    /*
+     * Get the values with associated fields name
+     */
+    public function getFieldsList();
+    
+    /*
+     * Get the result of one or multiple send request
+     */
+    public function getResult();
 }
 ?>

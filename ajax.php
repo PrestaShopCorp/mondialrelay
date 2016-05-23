@@ -32,19 +32,20 @@
  */
 
 /* 
-* 	Clean displayed content for Admin ajax query
+*     Clean displayed content for Admin ajax query
 */
-@ob_clean();
+if  ( ob_get_level() && ob_get_length() >  0)
+    @ob_clean(); 
 
 /* 
-*  	Front Ajax query, need the front cookie and MR class
-*	When it's back query, the PS core made the work
+*      Front Ajax query, need the front cookie and MR class
+*    When it's back query, the PS core made the work
 */
 if (!defined('_PS_ADMIN_DIR_'))
 {
-	require_once(realpath(dirname(__FILE__).'/../../config/config.inc.php'));
-	require_once(realpath(dirname(__FILE__).'/../../init.php'));
-	require_once(dirname(__FILE__).'/mondialrelay.php');
+    require_once(realpath(dirname(__FILE__).'/../../config/config.inc.php'));
+    require_once(realpath(dirname(__FILE__).'/../../init.php'));
+    require_once(dirname(__FILE__).'/mondialrelay.php');
 }
 
 $mondialrelay = isset($this) ? $this : new Mondialrelay();
@@ -62,18 +63,18 @@ $token = Tools::getValue('mrtoken');
 
 /* Access page List liable to the generated token*/
 $accessPageList = array(
-	MondialRelay::getToken('front') => array(
-		'MRGetRelayPoint',
-		'addSelectedCarrierToDB'
-	),
-	MondialRelay::getToken('back') => array(
-		'MRGetTickets',
-		'MRCreateTickets',
-		'MRDeleteHistory',
-		'uninstallDetail',
-		'DeleteHistory',
-		'MRDownloadPDF'
-	)
+    MondialRelay::getToken('front') => array(
+        'MRGetRelayPoint',
+        'addSelectedCarrierToDB'
+    ),
+    MondialRelay::getToken('back') => array(
+        'MRGetTickets',
+        'MRCreateTickets',
+        'MRDeleteHistory',
+        'uninstallDetail',
+        'DeleteHistory',
+        'MRDownloadPDF'
+    )
 );
 
 $params = array();
@@ -82,73 +83,74 @@ $result = array();
 /* If the method name associated to the token received doesn't match with*/
 /* the list, then we kill the request*/
 if (!isset($accessPageList[$token]) || !in_array($method, $accessPageList[$token]))
-	exit();
+    exit();
 
 /* Method name allow to instanciate his object to properly call the*/
 /* implemented interface method and do his job*/
 switch ($method)
 {
-	case 'MRCreateTickets':
-		$params['orderIdList'] = Tools::getValue('order_id_list');
-		$params['totalOrder'] = Tools::getValue('numSelected');
-		$params['weightList'] = Tools::getValue('weight_list');
-		$params['insuranceList'] = Tools::getValue('insurance_list');
-		break;
-	case 'MRGetTickets':
-		$params['detailedExpeditionList'] = Tools::getValue('detailedExpeditionList');
-		break;
-	case 'MRDownloadPDF':
-		$params['Expeditions'] = Tools::getValue('detailedExpeditionList');
-		break;
-	case 'DeleteHistory':
-		$params['historyIdList'] = Tools::getValue('history_id_list');
-		break;
-	case 'uninstallDetail':
-		$params['action'] = Tools::getValue('action');
-		break;
-	case 'MRGetRelayPoint':
-		$params['id_carrier'] = Tools::getValue('id_carrier');
-		$params['weight'] = Context::getContext()->cart->getTotalWeight();
-		$params['id_address_delivery'] = Context::getContext()->cart->id_address_delivery;
-		break;
-	case 'addSelectedCarrierToDB':
-		$params['id_carrier'] = Tools::getValue('id_carrier');
-		$params['id_cart'] = Context::getContext()->cart->id;
-		$params['id_customer'] = Context::getContext()->customer->id;
-		$params['id_mr_method'] = Tools::getValue('id_mr_method');
-		$params['relayPointInfo'] = Tools::getValue('relayPointInfo');
-		break;
-	default:
+    case 'MRCreateTickets':
+        $params['orderIdList'] = Tools::getValue('order_id_list');
+        $params['totalOrder'] = Tools::getValue('numSelected');
+        $params['weightList'] = Tools::getValue('weight_list');
+        $params['insuranceList'] = Tools::getValue('insurance_list');
+        break;
+    case 'MRGetTickets':
+        $params['detailedExpeditionList'] = Tools::getValue('detailedExpeditionList');
+        break;
+    case 'MRDownloadPDF':
+        $params['Expeditions'] = Tools::getValue('detailedExpeditionList');
+        break;
+    case 'DeleteHistory':
+        $params['historyIdList'] = Tools::getValue('history_id_list');
+        break;
+    case 'uninstallDetail':
+        $params['action'] = Tools::getValue('action');
+        break;
+    case 'MRGetRelayPoint':
+        $params['id_carrier'] = Tools::getValue('id_carrier');
+        $params['mode_liv'] = Tools::getValue('mode_liv');
+        $params['weight'] = Context::getContext()->cart->getTotalWeight();
+        $params['id_address_delivery'] = Context::getContext()->cart->id_address_delivery;
+        break;
+    case 'addSelectedCarrierToDB':
+        $params['id_carrier'] = Tools::getValue('id_carrier');
+        $params['id_cart'] = Context::getContext()->cart->id;
+        $params['id_customer'] = Context::getContext()->customer->id;
+        $params['id_mr_method'] = Tools::getValue('id_mr_method');
+        $params['relayPointInfo'] = Tools::getValue('relayPointInfo');
+        break;
+    default:
 } 
-	
+    
 /* Try to instanciate the method object name and call the necessaries method*/
 try
 {
-	if (class_exists($method, false))
-	{
-		/* $this is the current mondialrelay object loaded when use in BO. Use for perf*/
-		$obj = new $method($params, $mondialrelay);
-		
-		/* Verify that the class implement correctly the interface*/
-		/* Else use a Management class to do some ajax stuff*/
-		if (($obj instanceof IMondialRelayWSMethod))
-		{
-			$obj->init();
-			$obj->send();
-			$result = $obj->getResult();
-		}
-		unset($obj);
-	}
-	else if (($management = new MRManagement($params)) && method_exists($management, $method))
-		$result = $management->{$method}();
-	else
-		throw new Exception('Method Class : '.$method.' can\'t be found');
-	unset($management);
+    if (class_exists($method, false))
+    {
+        /* $this is the current mondialrelay object loaded when use in BO. Use for perf*/
+        $obj = new $method($params, $mondialrelay);
+        
+        /* Verify that the class implement correctly the interface*/
+        /* Else use a Management class to do some ajax stuff*/
+        if (($obj instanceof IMondialRelayWSMethod))
+        {
+            $obj->init();
+            $obj->send();
+            $result = $obj->getResult();
+        }
+        unset($obj);
+    }
+    else if (($management = new MRManagement($params)) && method_exists($management, $method))
+        $result = $management->{$method}();
+    else
+        throw new Exception('Method Class : '.$method.' can\'t be found');
+    unset($management);
 }
 catch(Exception $e)
 {
-	echo MRTools::jsonEncode(array('other' => array('error' => array($e->getMessage()))));
-	exit(-1);
+    echo MRTools::jsonEncode(array('other' => array('error' => array($e->getMessage()))));
+    exit(-1);
 }
 echo MRTools::jsonEncode($result);
 exit(0);

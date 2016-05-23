@@ -24,13 +24,20 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 
+<noscript>
+    <h3 style="color: red;">{l s='JavaScript is disabled on your browser, please enable it in order to select a Point Relais®.' mod='mondialrelay'}</h3>
+</noscript>
+
 <script type="text/javascript">	
 	// Global JS Value
 	var PS_MRData = {$MR_Data};
 	{assign var=MR_Data value=$MR_Data|json_decode:1}
 	// literal for smarty v2 compatibility
 	$(document).ready(function() {literal}{{/literal}
-		PS_MRObject.initFront();
+		// settimeout utiliser pour la connection de l'utilisateur en opc
+		setTimeout(function(){ 
+			PS_MRObject.initFront();
+		},1000);
 	{literal}}{/literal});
 </script>
 {*if $MR_Data.PS_VERSION >= '1.5' && !$MR_Data.carrier}

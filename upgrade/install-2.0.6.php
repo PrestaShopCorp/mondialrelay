@@ -26,23 +26,23 @@
 */
 
 if (!defined('_PS_VERSION_'))
-	exit;
+    exit;
 
 /** 
 * object module available
 */
 function upgrade_module_2_0_6($object)
 {
-	$upgrade_version = '2.0.6';
+    $upgrade_version = '2.0.6';
 
-	$object->upgrade_detail[$upgrade_version] = array();
+    $object->upgrade_detail[$upgrade_version] = array();
 
-	try {
-		if (!Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'mr_selected` ADD  `MR_insurance` INT( 11 ) NOT NULL AFTER  `MR_poids`'))
-			$object->upgrade_detail[$upgrade_version][] = $object->l('Can\'t add new field in methodtable');
-	}
-	catch (Exception $e) { }
-	
-		Configuration::updateValue('MONDIAL_RELAY', $upgrade_version);
-		return (bool)count($object->upgrade_detail[$upgrade_version]);
+    try {
+        if (!Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'mr_selected` ADD  `MR_insurance` INT( 11 ) NOT NULL AFTER  `MR_poids`'))
+            $object->upgrade_detail[$upgrade_version][] = $object->l('Can\'t add new field in methodtable');
+    }
+    catch (Exception $e) { }
+    
+        Configuration::updateValue('MONDIAL_RELAY', $upgrade_version);
+        return (bool)count($object->upgrade_detail[$upgrade_version]);
 }

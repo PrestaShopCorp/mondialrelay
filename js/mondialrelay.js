@@ -537,7 +537,6 @@ var PS_MRObject = (function($, undefined) {
 	function PS_MRAddSelectedCarrierInDB(id_carrier)
 	{
 		PS_MRHideLastRelayPointList();
-
 		// Make the request
 		$.ajax({
 			type: 'POST',
@@ -567,8 +566,10 @@ var PS_MRObject = (function($, undefined) {
 		// Reset for any carrier changement
 		if (MRLivraisonType != 'LD1' &&	MRLivraisonType != 'LDS' && MRLivraisonType != 'HOM')
 		{
+            if(PS_MRSelectedRelayPoint['relayPointNum'] == -1)
+                PS_MRSelectedRelayPoint['relayPointNum'] = 0;
 			// Seek Relay point if it doesn't a home delivery mode
-			PS_MRGetRelayPoint(carrierSelected);
+			PS_MRGetRelayPoint(carrierSelected, MRLivraisonType);
 		}
 		else
 		{
@@ -594,7 +595,6 @@ var PS_MRObject = (function($, undefined) {
 	function PS_MRCheckSelectedRelayPoint()
 	{
 		var input;
-
 		// Check if the input is linked to the module and look into
 		// a temporary variable if a relay point has been selected
 		if ((input = $('input[name=id_carrier]:checked')).length &&
@@ -663,7 +663,10 @@ var PS_MRObject = (function($, undefined) {
 				for (relayPoint in json.success)
 				{
 					// Check if the the content wasn't already displayed
-					contentBlockid =  'relayPoint_' + json.success[relayPoint].Num + '_' + carrier_id;
+
+                    if (json.success[relayPoint].Num != '') {
+					    contentBlockid =  'relayPoint_' + json.success[relayPoint].Num + '_' + carrier_id;
+                    }
 					if (!$('#' + contentBlockid).size())
 					{
 						// Set translation if a preselection exist
@@ -726,7 +729,7 @@ var PS_MRObject = (function($, undefined) {
 	 *
 	 * @param carrierSelected
 	 */
-	function PS_MRFetchRelayPoint(carrierSelected)
+	function PS_MRFetchRelayPoint(carrierSelected, MRLivraisonType)
 	{
 		carrier_id = carrierSelected.val().replace(',', ''); 
 		// Block is an input, we need the 'tr' element
@@ -748,6 +751,7 @@ var PS_MRObject = (function($, undefined) {
 					'id_carrier' : carrier_id,
 					'ajax' : true,
 					'step' : 2,
+                    'mode_liv' : MRLivraisonType,
 					'mrtoken' : mrtoken},
 				dataType: 'json',
 				success: function(json)
@@ -770,10 +774,9 @@ var PS_MRObject = (function($, undefined) {
 	 *
 	 * @param carrierSelected
 	 */
-	function PS_MRGetRelayPoint(carrierSelected)
+	function PS_MRGetRelayPoint(carrierSelected, MRLivraisonType)
 	{
 		carrier_id = carrierSelected.val().replace(',','');
-
 		// Init back the inital view, hide existing element, (keep cached)
 		element = 0;
 		totalElement = $('.PS_MRSelectedCarrier').size();
@@ -792,12 +795,12 @@ var PS_MRObject = (function($, undefined) {
 						return ;
 					}
 					// If the element isn't cached, we fetch it
-					PS_MRFetchRelayPoint(carrierSelected);
+					PS_MRFetchRelayPoint(carrierSelected, MRLivraisonType);
 				}
 				++element;
 			});
 		else
-			PS_MRFetchRelayPoint(carrierSelected);
+			PS_MRFetchRelayPoint(carrierSelected, MRLivraisonType);
 	}
 
 	/**
@@ -1155,6 +1158,7 @@ var PS_MRObject = (function($, undefined) {
 					var carrier_selected = $('input.delivery_option_radio:checked').val();
 					var parent_element = $(e).parents('.delivery_option');
 					var new_element = 'MR_PR_list_'+MR_idcarrier;
+                    
 					if($('#'+new_element).length > 0) {
 						$('#'+new_element).remove();
 						if( isMRCarrier(MR_idcarrier)!=false && typeof(MR_carrier) != "undefined" && (MR_carrier.dlv_mode!='LD1' && MR_carrier.dlv_mode!='LDS' && MR_carrier.dlv_mode!='HOM')) {
@@ -1176,7 +1180,6 @@ var PS_MRObject = (function($, undefined) {
 					// Hide MR input if one of them is not selected 
 					if($(e).val() == carrier_selected)
 					{
-						console.log(carrier_selected);
 						if(MR_carrier != false) {
 							PS_MRCarrierMethodList[MR_idcarrier] = MR_carrier.id_mr_method;
 							PS_MRSelectedRelayPoint['carrier_id'] = MR_idcarrier; 
@@ -1197,6 +1200,7 @@ var PS_MRObject = (function($, undefined) {
 					}
 				});
 			}
+                        
 		}
 	}
 	
@@ -1281,20 +1285,7 @@ var PS_MRObject = (function($, undefined) {
 			$('#MR_config_menu').children('ul').css('margin-left', width + 'px');
 		}
 		
-		// 1.5 OPC Validation - Warn user to select a relay point
-			$('.payment_module a').live('click', function() {
-                            if (typeof PS_MRData != 'undefined')
-                            {
-				if (PS_MRData.PS_VERSION >= '1.5' && PS_MRData.carrier)
-				{
-					var _return = !(!PS_MRSelectedRelayPoint['carrier_id'] || !PS_MRSelectedRelayPoint['relayPointNum']);
-					if (!_return)
-						alert(PS_MRTranslationList['errorSelection']);
-					return _return;
-				}
-                            }
-			});
-			
+/*
 			// If MR carrier selected, check MR relay point is selected too
 			$('input[name=processCarrier], button[name=processCarrier]').click(function(){  
 				var _return = !(PS_MRSelectedRelayPoint['carrier_id'] && !PS_MRSelectedRelayPoint['relayPointNum']);
@@ -1303,15 +1294,14 @@ var PS_MRObject = (function($, undefined) {
 				
 				return _return;
 			});
-			
-			if (typeof PS_MRData != 'undefined')
+*/
+		// En OPC, si l'utilisateur est déconnecter, PS_MRData n'existe pas au début
+		$('input[name="id_carrier"]').live('click', function(){
+			if (typeof PS_MRData != 'undefined' && PS_MRData.PS_VERSION < '1.5')
 			{
-				if (PS_MRData.PS_VERSION < '1.5') {
-					$('input[name="id_carrier"]').click(function(){
-						checkToDisplayRelayList();
-					});
-				}
+				checkToDisplayRelayList();
 			}
+		});
 			
 			// Handle input click of the other input to hide the previous relay point list displayed
 	});
@@ -1320,6 +1310,7 @@ var PS_MRObject = (function($, undefined) {
 	return {
 		initFront : function() {
 			checkToDisplayRelayList();
+            setProtectRelaySelected();
 		},
 		uninstall : function(url)
 		{
@@ -1359,3 +1350,5 @@ function mr_checkConnexion() {
 		} 
 	});
 }
+
+

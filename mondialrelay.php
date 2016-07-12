@@ -413,6 +413,34 @@ class MondialRelay extends Module
 		$iso = Language::getIsoById((int)$id_lang);
 		if (file_exists(dirname(__FILE__).'/mails/'.$iso.'/'.$template.'.txt') && file_exists(dirname(__FILE__).'/mails/'.$iso.'/'.$template.'.html'))
 			Mail::Send((int)$id_lang, $template, $subject, $templateVars, $customer->email, $customer->firstname.' '.$customer->lastname, Configuration::get('PS_SHOP_EMAIL'), Configuration::get('PS_SHOP_NAME'), null, null, dirname(__FILE__).'/mails/');
+	
+		# Set relay point address as delivery address for the order
+		$current_address = new Address($order->id_address_delivery);
+	        try {
+	            $a               = new Address();
+	            $a->alias        = 'Mondial Relay ' . $mr_point['MR_Selected_Num'];
+	            $a->id_customer  = $mr_point['id_customer'];
+	            $a->id_country   = Country::getByIso($mr_point['MR_Selected_Pays']);
+	            $a->company      = Tools::substr($mr_point['MR_Selected_LgAdr1'], 0, 32);
+	            $a->lastname     = $current_address->lastname;
+	            $a->firstname    = $current_address->firstname;
+	            $a->address1     = $mr_point['MR_Selected_LgAdr3'];
+	            $a->postcode     = $mr_point['MR_Selected_CP'];
+	            $a->city         = $mr_point['MR_Selected_Ville'];
+	            $a->phone        = $current_address->phone;
+	            $a->phone_mobile = $current_address->phone_mobile;
+	            $a->other        = $mr_point['id_mr_selected'];
+	            $a->active       = 0;
+	            $a->deleted      = 1;
+	            $a->save();
+	            if ($a->id) {
+	                $params['order']->id_address_delivery = $a->id;
+	                $params['order']->save();
+	            }
+	        } catch (Exception $e) {
+	            PrestaShopLogger::addLog('Mondial Relay : hookNewOrder : ' . $e->getMessage(), 1, null, 'order', $params['order']->id);
+	        }
+		
 	}
 
 	public function hookBackOfficeHeader()

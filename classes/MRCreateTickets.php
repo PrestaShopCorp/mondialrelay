@@ -394,8 +394,9 @@ class MRCreateTickets implements IMondialRelayWSMethod
 					$valueDetailed['value'] = !empty($cleanedString) ? Tools::strtoupper($cleanedString) : Tools::strtoupper($valueDetailed['value']);
 
 					// Call a pointer function if exist to do different test
-					if (isset($valueDetailed['methodValidation']) && method_exists('MRTools', $valueDetailed['methodValidation']) && isset($valueDetailed['params']) && MRTools::$valueDetailed['methodValidation']($valueDetailed['value'], $valueDetailed['params']))
-						$concatenationValue .= $valueDetailed['value'];
+                                        $toolMethodValidation = $valueDetailed['methodValidation'];
+                                        if (isset($valueDetailed['methodValidation']) && method_exists('MRTools', $toolMethodValidation) && isset($valueDetailed['params']) && MRTools::$toolMethodValidation($valueDetailed['value'], $valueDetailed['params']))
+                                                $concatenationValue .= $valueDetailed['value'];
 					// Use simple Regex test given by MondialRelay
 					else if (isset($valueDetailed['regexValidation']) && preg_match($valueDetailed['regexValidation'], $valueDetailed['value'], $matches))
 						$concatenationValue .= $valueDetailed['value'];

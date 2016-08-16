@@ -65,15 +65,15 @@ class AdminMondialRelay extends AdminTab
 			$this->mondialrelay
 		);
 		if (is_array($orders) && count($orders))
-		foreach ($orders as &$order)
+		foreach ($orders as $keyOrder => $order)
 		{
-			$order['display_total_price'] = Tools::displayPrice($order['total'], new Currency($order['id_currency']));
-			$order['display_shipping_price'] = Tools::displayPrice($order['shipping'], new Currency($order['id_currency']));
+			$orders[$keyOrder]['display_total_price'] = Tools::displayPrice($order['total'], new Currency($order['id_currency']));
+			$orders[$keyOrder]['display_shipping_price'] = Tools::displayPrice($order['shipping'], new Currency($order['id_currency']));
 			if (version_compare(_PS_VERSION_, '1.5.5', '<'))
-				$order['display_date'] = Tools::displayDate($order['date'], $this->context->language->id);
+				$orders[$keyOrder]['display_date'] = Tools::displayDate($order['date'], $this->context->language->id);
 			else
-				$order['display_date'] = Tools::displayDate($order['date']);
-			$order['weight'] = (!empty($order['mr_weight']) && $order['mr_weight'] > 0) ? $order['mr_weight'] : $order['order_weight'];
+				$orders[$keyOrder]['display_date'] = Tools::displayDate($order['date']);
+			$orders[$keyOrder]['weight'] = (!empty($order['mr_weight']) && $order['mr_weight'] > 0) ? $order['mr_weight'] : $order['order_weight'];
 		}
 
 		$controller = (_PS_VERSION_ < '1.5') ? 'AdminContact' : 'AdminStores';
@@ -99,8 +99,8 @@ class AdminMondialRelay extends AdminTab
 		$query = 'SELECT * FROM `'._DB_PREFIX_.'mr_history` ORDER BY `id` DESC ;';
 		$history = Db::getInstance()->executeS($query);
 		
-		foreach ($history as &$item)
-			$item['url_10x15'] = str_replace('format=A4', 'format=10x15', $item['url_a4']);
+		foreach ($history as $historyKey => $item)
+			$history[$historyKey]['url_10x15'] = str_replace('format=A4', 'format=10x15', $item['url_a4']);
 		
 		$this->context->smarty->assign(array(
 			'MR_histories' => $history)

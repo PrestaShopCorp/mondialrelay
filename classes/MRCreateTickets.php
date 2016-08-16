@@ -393,8 +393,10 @@ class MRCreateTickets implements IMondialRelayWSMethod
 					$cleanedString = MRTools::removeAccents($valueDetailed['value']);
 					$valueDetailed['value'] = !empty($cleanedString) ? Tools::strtoupper($cleanedString) : Tools::strtoupper($valueDetailed['value']);
 
+                    $call = !empty($valueDetailed['methodValidation']) ? call_user_func('MRTools::' . $valueDetailed['methodValidation'], array($valueDetailed['value'], $valueDetailed['params'])) : false;
+                    
 					// Call a pointer function if exist to do different test
-					if (isset($valueDetailed['methodValidation']) && method_exists('MRTools', $valueDetailed['methodValidation']) && isset($valueDetailed['params']) && MRTools::$valueDetailed['methodValidation']($valueDetailed['value'], $valueDetailed['params']))
+					if (isset($valueDetailed['methodValidation']) && method_exists('MRTools', $valueDetailed['methodValidation']) && isset($valueDetailed['params']) && $call)
 						$concatenationValue .= $valueDetailed['value'];
 					// Use simple Regex test given by MondialRelay
 					else if (isset($valueDetailed['regexValidation']) && preg_match($valueDetailed['regexValidation'], $valueDetailed['value'], $matches))

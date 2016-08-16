@@ -134,8 +134,10 @@ class MRGetRelayPoint implements IMondialRelayWSMethod
 				$valueDetailed['value'] = !empty($cleanedString) ? Tools::strtoupper($cleanedString) : Tools::strtoupper($valueDetailed['value']);
 
 				$valueDetailed['value'] = Tools::strtoupper($valueDetailed['value']);
+                $call = !empty($valueDetailed['methodValidation']) ? call_user_func('MRTools::' . $valueDetailed['methodValidation'], array($valueDetailed['value'], $valueDetailed['params'])) : false;
+
 				// Call a pointer function if exist to do different test
-				if (isset($valueDetailed['methodValidation']) && method_exists('MRTools', $valueDetailed['methodValidation']) && isset($valueDetailed['params']) && MRTools::$valueDetailed['methodValidation']($valueDetailed['value'], $valueDetailed['params']))
+				if (isset($valueDetailed['methodValidation']) && method_exists('MRTools', $valueDetailed['methodValidation']) && isset($valueDetailed['params']) && $call)
 					$concatenationValue .= $valueDetailed['value'];
 				// Use simple Regex test given by MondialRelay
 				else if (isset($valueDetailed['regexValidation']) && preg_match($valueDetailed['regexValidation'], $valueDetailed['value'], $matches))
@@ -188,11 +190,11 @@ class MRGetRelayPoint implements IMondialRelayWSMethod
 		foreach ($relayPointList as $relayPoint)
 			$relayPointNumList[] = $relayPoint->Num;
 		$permaList = MRRelayDetail::getPermaLink($relayPointNumList, $this->_id_address_delivery);
-		foreach ($relayPointList as &$relayPoint)
+		foreach ($relayPointList as $keyRelay => $relayPoint)
 		{
-			$relayPoint->permaLinkDetail = '';
+			$relayPointList->$keyRelay->permaLinkDetail = '';
 			if (array_key_exists($relayPoint->Num, $permaList))
-				$relayPoint->permaLinkDetail = $permaList[$relayPoint->Num];
+				$relayPointList->$keyRelay->permaLinkDetail = $permaList[$relayPoint->Num];
 		}
 		return $relayPointList;
 	}
@@ -220,10 +222,10 @@ class MRGetRelayPoint implements IMondialRelayWSMethod
 			foreach ($result as $num => $relayPoint)
 			{
 				$totalEmptyFields = 0;
-				foreach ($relayPoint as &$value)
+				foreach ($relayPoint as $keyRelay => $value)
 				{
-					$value = trim($value);
-					if (empty($value))
+					$relayPoint->$keyRelay = trim($relayPoint->$keyRelay);
+					if (empty($relayPoint->$keyRelay))
 						++$totalEmptyFields;
 				}
 				if ($totalEmptyFields == count($relayPoint))

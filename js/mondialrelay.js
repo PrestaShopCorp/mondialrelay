@@ -593,13 +593,12 @@ var PS_MRObject = (function($, undefined) {
 	 */
 	function PS_MRCheckSelectedRelayPoint()
 	{
-		var input;
+		var input     = $('input.delivery_option_radio:checked').val().replace(",", "");
+		var compareTo = PS_MRData['carrier_list'][0]['id_carrier'];
 
 		// Check if the input is linked to the module and look into
 		// a temporary variable if a relay point has been selected
-		if ((input = $('input[name=id_carrier]:checked')).length &&
-			PS_MRCarrierMethodList[input.val()] != undefined &&
-			PS_MRSelectedRelayPoint['relayPointNum'] == 0)
+		if (input == compareTo && PS_MRSelectedRelayPoint['relayPointNum'] < 1)
 		{
 			//$('#PS_MRSelectCarrierError').fadeIn('fast');
 			alert(PS_MRTranslationList['errorSelection']);
@@ -1176,7 +1175,6 @@ var PS_MRObject = (function($, undefined) {
 					// Hide MR input if one of them is not selected 
 					if($(e).val() == carrier_selected)
 					{
-						console.log(carrier_selected);
 						if(MR_carrier != false) {
 							PS_MRCarrierMethodList[MR_idcarrier] = MR_carrier.id_mr_method;
 							PS_MRSelectedRelayPoint['carrier_id'] = MR_idcarrier; 
